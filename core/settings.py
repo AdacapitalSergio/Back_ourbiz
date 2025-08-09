@@ -26,7 +26,47 @@ SECRET_KEY = 'django-insecure-q(2tc^ov3%a++i8a2z01&+&(i7-yz3!)usfnbq8)u8wp8$(!2u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Hosts permitidos
+ALLOWED_HOSTS = [
+    "13.43.246.242",
+    "localhost",
+    "127.0.0.1",
+    "www.maroldep.ao",
+    "maroldep.ao",
+    "api.v1.maroldep.ao"
+]
+
+# Configuração CORS (se estiver usando django-cors-headers)
+CORS_ALLOWED_ORIGINS = [
+    "https://13.43.246.242",
+    "https://www.ourbiz.ao",
+    "https://ourbiz.ao",
+    "https://api.v1.ourbiz.ao",
+    "https://127.0.0.1"
+]
+
+# Domínios confiáveis para CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "https://13.43.246.242",
+    "https://www.ourbiz.ao",
+    "https://ourbiz.ao",
+    "https://api.v1.ourbiz.ao",
+    "https://127.0.0.1"
+]
+
+# Segurança
+SECURE_SSL_REDIRECT = False  # True se usar HTTPS obrigatório
+CSRF_COOKIE_SECURE = False   # True se só aceitar cookie via HTTPS
+SESSION_COOKIE_SECURE = False
+USE_X_FORWARDED_HOST = True  # Necessário se estiver atrás de proxy/load balancer
+
+# CSRF via sessão
+CSRF_USE_SESSIONS = True  # Alternativa para evitar falhas no CSRF
+CSRF_COOKIE_HTTPONLY = True  # Impede que JavaScript acesse o cookie CSRF
+CSRF_COOKIE_SAMESITE = 'Lax'  # Permite CSRF apenas para o mesmo site
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 
 # Application definition
