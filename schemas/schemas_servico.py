@@ -49,8 +49,7 @@ class RequisitarServicoSchema(Schema):
         arbitrary_types_allowed = True
 
 class RequisitarConversationSchema(Schema):
-    seuEmail: EmailStr = Field(..., title="Email para contato")
-    seuTelefone: str = Field(..., title="Telefone/WhatsApp", pattern=r"^\d{9,20}$")
+    contacto:Optional[str] = Field(None, title="Contacto", max_length=500)
     mensagen: Optional[str] = Field(None, title="Comentários adicionais", max_length=500)
 
     class Config:

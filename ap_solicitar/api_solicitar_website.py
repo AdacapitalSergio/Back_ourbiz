@@ -3,9 +3,7 @@ from ninja import Router
 
 from .models import WebsiteRequest, Objetivo
 from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServicoSchema
-from utils.solicitacao_website_email import send_conversation_for_operation_email, send_conversation_for_operation_whatsaap, send_email_for_operation, send_website_request_email
-
-
+from utils.solicitacao_website_email import send_conversation_for_operation_email
 
 # Routers
 solicitar_router = Router()
@@ -76,13 +74,9 @@ def solicitar_conversation_for_operation(request, data: RequisitarConversationSc
     """if not request.auth:
         return 400, {"message": "Usuário não autenticado."}"""
     # Chamar a função de envio assíncrono  
-    if data.seuEmail:
+    if data.contacto:
         send_conversation_for_operation_email.delay(
-        email_requerente=data.seuEmail, sms_requerente=data.mensagen,
+        contacto_requerente=data.contacto, sms_requerente=data.mensagen,
         )
-
-    if data.seuTelefone:
-        send_conversation_for_operation_whatsaap(
-    phone_requerente=data.seuTelefone, sms_requerente=data.mensagen,
-    )    
+     
     return 200, {"message": "Contacto enviado com sucesso."}

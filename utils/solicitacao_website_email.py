@@ -220,7 +220,7 @@ def send_website_request_email(
 
 @shared_task
 def send_conversation_for_operation_email(
-    email_requerente, sms_requerente,
+    contacto_requerente, sms_requerente,
 ):
     # Caminho do logotipo
     logo_path = os.path.join(settings.BASE_DIR, "staticfiles", "img", "IMG_20250403_111108_173.jpg")
@@ -232,7 +232,7 @@ def send_conversation_for_operation_email(
     <body style="font-family: Arial, sans-serif;">
         <div style="max-width:600px;margin:0 auto;border:2px solid #FD3DB5;padding:20px;border-radius:8px;">
             <h2 style="color:#FD3DB5;text-align:center;">🌐 Nova Conversa</h2>
-            <p><b>E-mail:</b> {email_requerente}</p>
+            <p><b>E-mail:</b> {contacto_requerente}</p>
             <p>{sms_requerente}</p>
             <p style="text-align:center;">
                 <img src="cid:logo_id" style="max-width:200px;">
@@ -259,10 +259,3 @@ def send_conversation_for_operation_email(
             msg.attach(img)
 
     msg.send()
-    
-    
-
-def send_conversation_for_operation_whatsaap(
-    phone_requerente, sms_requerente,
-):
-    ...
