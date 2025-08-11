@@ -68,8 +68,8 @@ def recuperar_conta(request, dados: LinkEmailSchema):
         cliente.email,
         msg_link,
     )
-    
-    return {"mensagem": f"Se o email existir, um link de recuperação foi enviado.{link_recuperacao}",
+
+    return {"mensagem": f"Se o email existir, um link de recuperação foi enviado.{dados.link_recuperacao}",
             "token": f"{token_recuperacao}"
             }
 
