@@ -31,8 +31,8 @@ ALLOWED_HOSTS = [
     "13.43.246.242",
     "localhost",
     "127.0.0.1",
-    "www.maroldep.ao",
-    "maroldep.ao",
+    "www.ourbiz.ao",
+    "ourbiz.ao",
     "api.v1.ourbiz.ao",
     "oour-biz.vercel.app"
 ]
