@@ -44,7 +44,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://ourbiz.ao",
     "https://api.v1.ourbiz.ao",
     "https://127.0.0.1",
-    "http://localhost:5173",
+    "https://localhost",
+    "http://127.0.0.1",
+    "http://localhost",
     "https://oour-biz.vercel.app"
 ]
 
@@ -55,7 +57,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://ourbiz.ao",
     "https://api.v1.ourbiz.ao",
     "https://127.0.0.1",
-    "http://localhost:5173",
+    "https://localhost",
+    "http://127.0.0.1",
+    "http://localhost",
     "https://oour-biz.vercel.app"
 
 ]
