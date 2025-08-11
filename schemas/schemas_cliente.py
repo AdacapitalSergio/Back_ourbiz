@@ -21,8 +21,9 @@ class ErrorSchema(Schema):
 class RedefinirSenhaSchema(Schema):
     new_password: str
 
-class EmailSchema(Schema):
-    email: str
+class LinkEmailSchema(Schema):
+    email: EmailStr = Field(..., title="Email do cliente")
+    link: str
     
     
 class CadastroClienteSchema(Schema):

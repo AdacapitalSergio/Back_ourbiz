@@ -15,7 +15,7 @@ from ninja import Router
 from utils.solicitacao_website_email import send_verification_email
 from .models import Cliente, EmailVerification
 import uuid
-from schemas.schemas_cliente import ClienteSchema, EmailSchema, LoginSchema, RedefinirSenhaSchema
+from schemas.schemas_cliente import ClienteSchema, LinkEmailSchema, LoginSchema, RedefinirSenhaSchema
 
 # Routers
 cliente_router = Router()
@@ -42,7 +42,7 @@ def login(request, data: LoginSchema):
 
 
 @auth_router.post("/recuperacao-conta")
-def recuperar_conta(request, dados: EmailSchema):
+def recuperar_conta(request, dados: LinkEmailSchema):
     """
     Endpoint para iniciar o processo de recuperação de conta.
     Mesmo que o email não esteja cadastrado, a resposta é padronizada
@@ -59,19 +59,19 @@ def recuperar_conta(request, dados: EmailSchema):
         "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRATION_MINUTES)
     }
     token_recuperacao = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    
-    # Define o link para redefinição de senha (ajuste a URL conforme seu frontend)
-    link_recuperacao = f"http://localhost:8000/api/clientes/redefinir-senha?token={token_recuperacao}"
+    #link_recuperacao = f"http://localhost:8000/api/clientes/redefinir-senha?token={token_recuperacao}"
     msg_link = "clique no link para recuperar a senha."
     # Envia o email de recuperação (idealmente, de forma assíncrona, por exemplo, com Celery)
     send_verification_email.delay(
         cliente.nome,
-        link_recuperacao,
+        dados.link_recuperacao,
         cliente.email,
         msg_link,
     )
     
-    return {"mensagem": f"Se o email existir, um link de recuperação foi enviado.{link_recuperacao}"}
+    return {"mensagem": f"Se o email existir, um link de recuperação foi enviado.{link_recuperacao}",
+            "token": f"{token_recuperacao}"
+            }
 
 redefinir_router = Router()
 @redefinir_router.post("/redefinir-senha")
@@ -137,8 +137,8 @@ def criar_cliente(request, data: ClienteSchema):
     verification = EmailVerification.objects.create(cliente=cliente, token=uuid.uuid4())
 
     # Criar link de verificação
-    verification_link = f"http://localhost:8000/api/clientes/verify-email/{verification.token}/"
-
+    #verification_link = f"http://localhost:8000/api/clientes/verify-email/{verification.token}/"
+    verification_link = f"https://api.v1.ourbiz:8000/api/clientes/verify-email/{verification.token}/"
     # Enviar e-mail de confirmação
     msg_link = "clique no link para confirmar seu e-mail"
 # Chamar a função de envio assíncrono
