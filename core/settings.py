@@ -26,7 +26,6 @@ SECRET_KEY = 'django-insecure-q(2tc^ov3%a++i8a2z01&+&(i7-yz3!)usfnbq8)u8wp8$(!2u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Hosts permitidos 'http://localhost:5173' 'https://oour-biz.vercel.app
 ALLOWED_HOSTS = [
     "13.43.246.242",
     "localhost",
@@ -34,7 +33,6 @@ ALLOWED_HOSTS = [
     "www.ourbiz.ao",
     "ourbiz.ao",
     "api.v1.ourbiz.ao",
-    "oour-biz.vercel.app"
 ]
 
 # Configuração CORS (se estiver usando django-cors-headers)
@@ -45,9 +43,6 @@ CORS_ALLOWED_ORIGINS = [
     "https://api.v1.ourbiz.ao",
     "https://127.0.0.1",
     "https://localhost",
-    "http://127.0.0.1",
-    "http://localhost",
-    "https://oour-biz.vercel.app"
 ]
 
 # Domínios confiáveis para CSRF
@@ -58,9 +53,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://api.v1.ourbiz.ao",
     "https://127.0.0.1",
     "https://localhost",
-    "http://127.0.0.1",
-    "http://localhost",
-    "https://oour-biz.vercel.app"
 
 ]
 
