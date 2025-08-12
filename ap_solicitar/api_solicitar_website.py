@@ -3,7 +3,7 @@ from ninja import Router
 
 from .models import WebsiteRequest, Objetivo
 from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServicoSchema
-from utils.solicitacao_website_email import send_conversation_for_operation_email
+from utils.solicitacao_website_email import send_conversation_for_operation_email, send_website_request_email
 
 # Routers
 solicitar_router = Router()
