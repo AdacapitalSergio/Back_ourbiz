@@ -9,7 +9,7 @@ from utils.solicitacao_website_email import send_conversation_for_operation_emai
 
 # Routers
 solicitar_router = Router()
-
+contacto_router = Router()
 @solicitar_router.post("/", response={200: dict, 400: dict})
 def solicitar_servicos_website(request, data: RequisitarServicoSchema):   
     """solicitar_servicos: Rota para solicitar serviços de criação de sites."""
@@ -70,7 +70,7 @@ def solicitar_servicos_website(request, data: RequisitarServicoSchema):
 
 
 #@csrf_exempt
-@solicitar_router.post("/cotacto", response={200: dict, 400: dict})
+@contacto_router.post("/", response={200: dict, 400: dict})
 def solicitar_conversation_for_operation(request, data: RequisitarConversationSchema):   
     """solicitar_servicos: Rota para solicitar serviços de criação de sites."""
     # Verificar se o usuário está autenticado
