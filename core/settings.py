@@ -43,7 +43,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://api.v1.ourbiz.ao",
     "https://127.0.0.1",
     "https://localhost",
-    "http://localhost:5173/"
+    "http://localhost:5173"
 ]
 
 # Domínios confiáveis para CSRF
@@ -54,7 +54,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://api.v1.ourbiz.ao",
     "https://127.0.0.1",
     "https://localhost",
-    "http://localhost:5173/"
+    "http://localhost:5173"
 
 ]
 
