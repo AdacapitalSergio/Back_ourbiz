@@ -10,8 +10,8 @@ from usuario.api_usuarios import auth_router, cliente_router
 
 api = NinjaAPI()
 
-api.add_router("/solicitar/", solicitar_router)
-api.add_router("/cont/", contacto_router)
+api.add_router("/solicitar/", contacto_router)
+api.add_router("/cont/", solicitar_router)
 api.add_router("/clientes/", cliente_router)
 api.add_router("/auth/", auth_router)
 
