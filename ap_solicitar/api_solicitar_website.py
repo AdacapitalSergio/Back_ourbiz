@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
+from django.views.decorators.csrf import csrf_exempt
+
 
 from .models import WebsiteRequest, Objetivo
 from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServicoSchema
@@ -67,6 +69,7 @@ def solicitar_servicos_website(request, data: RequisitarServicoSchema):
     return 200, {"message": "Servico requisitado com sucesso por favor aguarde pelo nosso contacto."}
 
 
+@csrf_exempt
 @solicitar_router.post("/cotacto", response={200: dict, 400: dict})
 def solicitar_conversation_for_operation(request, data: RequisitarConversationSchema):   
     """solicitar_servicos: Rota para solicitar serviços de criação de sites."""
