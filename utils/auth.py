@@ -1,6 +1,6 @@
 from ninja.security import HttpBearer
 from datetime import datetime, timedelta
-from usuario.models import Cliente
+from usuario.models import Usuario
 import jwt 
 
 
@@ -15,9 +15,9 @@ class JWTAuth(HttpBearer):
     def authenticate(self, request, token: str):
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            user = Cliente.objects.get(id=payload["user_id"])
-            return user
-        except (jwt.ExpiredSignatureError, jwt.DecodeError, Cliente.DoesNotExist):
+            usuario = Usuario.objects.get(id=payload["user_id"])
+            return usuario
+        except (jwt.ExpiredSignatureError, jwt.DecodeError, Usuario.DoesNotExist):
             return None
 
 auth = JWTAuth()

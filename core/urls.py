@@ -6,13 +6,13 @@ from ninja import NinjaAPI
 
 
 from ap_solicitar.api_solicitar_website import solicitar_router, contacto_router   
-from usuario.api_usuarios import auth_router, cliente_router
+from usuario.api_usuarios import auth_router, usuario_router
 
 api = NinjaAPI()
 
 api.add_router("/solicitar/", solicitar_router)
 api.add_router("/contacto/", contacto_router)
-api.add_router("/clientes/", cliente_router)
+api.add_router("/usuario/", usuario_router)
 api.add_router("/auth/", auth_router)
 
 urlpatterns = [

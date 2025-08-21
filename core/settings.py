@@ -85,8 +85,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ninja',
     'ap_solicitar',
+    'usuario',
     'funcionario',
-    'usuario'
 ]
 
 MIDDLEWARE = [

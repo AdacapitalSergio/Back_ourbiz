@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-
-class User(AbstractUser):
+"""class User(AbstractUser):
     username = None  # remove o campo username padrão
     nome_completo = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -36,3 +35,4 @@ class Perfil(models.Model):
 
     def __str__(self):
         return f"Perfil de {self.user.nome_completo}"
+"""
