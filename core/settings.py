@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'ap_solicitar',
     'usuario',
     'funcionario',
+    'servico',
 ]
 
 MIDDLEWARE = [

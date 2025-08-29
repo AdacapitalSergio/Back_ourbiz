@@ -1,5 +1,9 @@
-from django.db import models
+from datetime import timedelta, date
+from dateutil.relativedelta import relativedelta  # melhor para meses
 
+from django.db import models
+from usuario.models import Cliente
+from funcionario.models import Funcionario
 # Create your models here.
 from django.db import models
 
@@ -37,3 +41,53 @@ class WebsiteRequest(models.Model):
 
     def __str__(self):
         return f"Solicitação de {self.nome_requerente} ({self.email_requerente})"
+    
+
+
+class Servico(models.Model):
+    nome = models.CharField(max_length=150)
+    descricao = models.TextField()
+    tipo = models.CharField(max_length=50, choices=[
+        ("consultoria_pequenas_empresas", "Consultoria para Pequenas Empresas"),
+        ("consultoria_startups", "Consultoria para Startups"),
+        ("outros", "Outros")
+    ])
+    preco_base = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.nome
+
+
+class SolicitacaoServico(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
+    servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
+
+    tipo_servico = models.CharField(max_length=50, choices=[
+        ("corrente", "Corrente"),
+        ("avulso", "Avulso")
+    ])
+
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=30, choices=[
+        ("pendente", "Pendente"),
+        ("aprovado", "Aprovado"),
+        ("em_andamento", "Em Andamento"),
+        ("concluido", "Concluído"),
+        ("cancelado", "Cancelado")
+    ], default="pendente")
+
+    descricao = models.TextField(blank=True, null=True)
+    data_inicio = models.DateField(default=date.today)
+    duracao_meses = models.PositiveIntegerField(default=1)
+    data_final = models.DateField(blank=True, null=True)
+    data_pagamento = models.DateField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.data_inicio and self.duracao_meses:
+            self.data_final = self.data_inicio + relativedelta(months=self.duracao_meses)
+            self.data_pagamento = self.data_final  # <- aqui pode mudar a regra se quiser (ex: data_inicio + 1 mês)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.servico.nome} - {self.cliente.user.username} ({self.status})"

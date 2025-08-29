@@ -1,3 +1,4 @@
+from datetime import date
 from ninja import Schema
 from typing import Optional, List
 from pydantic import EmailStr, Field
@@ -55,3 +56,27 @@ class RequisitarConversationSchema(Schema):
     class Config:
         from_attributes = True
         arbitrary_types_allowed = True
+
+
+class SolicitacaoServicoIn(Schema):
+    cliente_id: int
+    funcionario_id: Optional[int] = None
+    servico_id: int
+    tipo_servico: str
+    valor: float
+    status: str = "pendente"
+    duracao_meses: int
+    descricao: Optional[str] = None
+
+class SolicitacaoServicoOut(Schema):
+    id: int
+    cliente_id: int
+    funcionario_id: Optional[int]
+    servico_id: int
+    tipo_servico: str
+    valor: float
+    status: str
+    duracao_meses: int
+    data_inicial: date
+    data_final: date
+    descricao: Optional[str]

@@ -1,38 +1,20 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-"""class User(AbstractUser):
-    username = None  # remove o campo username padrão
-    nome_completo = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    telefone = models.CharField(max_length=20)
-    password = models.CharField(max_length=128)  # a senha será armazenada com hash
-
-    groups = models.ManyToManyField(
-        Group,
-        related_name='funcionario_user_set',  # nome único
-        blank=True,
-        help_text='The groups this user belongs to.',
-        verbose_name='groups'
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='funcionario_user_set',  # nome único
-        blank=True,
-        help_text='Specific permissions for this user.',
-        verbose_name='user permissions'
+from usuario.models import Usuario, Empresa
+# --------------------
+# Funcionário
+# --------------------
+class Funcionario(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name="funcionario")
+    cargo = models.CharField(max_length=100, blank=True, null=True)
+    departamento = models.CharField(max_length=100, blank=True, null=True)
+    matricula = models.CharField(max_length=50, blank=True, null=True)
+    empresa = models.ForeignKey(
+        Empresa,
+        on_delete=models.SET_NULL,
+        related_name="funcionarios",  # corrigido (antes era "clientes")
+        null=True,
+        blank=True
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['nome_completo', 'telefone']
-
     def __str__(self):
-        return self.email
-
-class Perfil(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
-    nif = models.CharField(max_length=20, blank=True, null=True)
-    nome_empresa = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return f"Perfil de {self.user.nome_completo}"
-"""
+        return f"Funcionário: {self.usuario.nome_completo} ({self.empresa.nome_completo if self.empresa else 'Sem empresa'})"
