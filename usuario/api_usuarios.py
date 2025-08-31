@@ -169,8 +169,18 @@ def criar_usuario(request, data: UsuarioCreateSchema):
         usuario.email,
         msg_link,
     )
+    payload = {
+        "user_id": usuario.id,
+        "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRATION_MINUTES),
+        "role": usuario.role if hasattr(usuario, "role") else "user"  # Exemplo de adição de permissão
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm=settings.ALGORITHM)
 
-    return 200, {"message": "Cadastro realizado com sucesso! Verifique seu e-mail para confirmar a conta."}
+    return {
+        "access_token": token, 
+        "token_type": "bearer", 
+        "usuario": UsuarioSchema.model_validate(usuario).model_dump()
+        }
 
 # -------------------------
 # VERIFICAÇÃO DE E-MAIL

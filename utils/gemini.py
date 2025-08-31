@@ -6,6 +6,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 import re
 import os
+from typing import Dict, Any
 
 # Configurar API
 genai.configure(api_key="AIzaSyBCtgsPp0KU848QKGEhd5KCGgfn9gYVbUo")
@@ -33,20 +34,72 @@ def limpar_texto(texto):
     texto = re.sub(r"\n{3,}", "\n\n", texto)
     return texto.strip()
 
-def gerar_conteudo_secoes(dados):
+
+def gerar_conteudo_secoes(dados: str) -> dict[str, Any]:
+    """
+    Gera automaticamente as seções do plano de negócio com base nos dados fornecidos.
+    """
+
     secoes = {
-        "Resumo Executivo": "Crie um resumo executivo para o plano de negócio da empresa abaixo.",
-        "Análise de Mercado": "Descreva a análise de mercado com base nas informações da empresa.",
-        "Plano de Marketing": "Crie um plano de marketing adequado às informações fornecidas.",
-        "Plano Operacional": "Detalhe o plano operacional baseado nos dados.",
-        "Plano Financeiro": "Descreva o plano financeiro usando os dados de custos e receita.",
-        "Considerações Finais": "Faça considerações finais incluindo riscos e planos de crescimento."
+        "visao_geral": """
+        Crie uma visão geral do plano de negócios, incluindo:
+        - Resumo executivo
+        - Análise SWOT (forças, fraquezas, oportunidades, ameaças)
+        - Modelos de negócio
+        - Análise de viabilidade
+        """,
+        "pesquisa_de_mercado": """
+        Descreva a pesquisa de mercado, incluindo:
+        - Nome da indústria
+        - Participação de mercado, penetração da internet e volume do e-commerce
+        - Público-alvo
+        - Tamanho do mercado e tendências
+        - Análise de concorrentes
+        """,
+        "produtos_servicos": """
+        Crie a seção de produtos e serviços, incluindo:
+        - Ofertas centrais
+        - Oportunidades de expansão
+        - Ofertas secundárias
+        - Atendimento ao cliente
+        """,
+        "vendas_marketing": """
+        Monte a seção de vendas e marketing, incluindo:
+        - Estratégia de marketing
+        - Canais de distribuição
+        - Estratégia de precificação
+        - Métodos de pagamento
+        """,
+        "operacoes": """
+        Descreva a parte operacional:
+        - Infraestrutura necessária
+        - Logística
+        - Parcerias estratégicas
+        - Tecnologia utilizada
+        """,
+        "financeiro": """
+        Crie a seção financeira, incluindo:
+        - Investimento inicial
+        - Custos fixos e variáveis
+        - Fontes de receita
+        - Projeções para 1, 3 e 5 anos
+        """,
+        "gestao": """
+        Monte a seção de gestão:
+        - Equipe fundadora
+        - Estrutura organizacional
+        - Recursos humanos
+        """
     }
+
     resultados = {}
-    for secao, prompt in secoes.items():
-        resposta = modelo.generate_content(f"{prompt}\n\nDados:\n{dados}")
-        resultados[secao] = limpar_texto(resposta.text)
+
+    for chave, prompt in secoes.items():
+        resposta = modelo.generate_content(f"{prompt}\n\nDados da empresa:\n{dados}")
+        resultados[chave] = limpar_texto(resposta.text)
+
     return resultados
+
 
 def gerar_plano_de_negocio_word(dados, imagem_capa="capa.jpg"):
     doc = Document()

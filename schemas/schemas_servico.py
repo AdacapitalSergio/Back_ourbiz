@@ -58,7 +58,7 @@ class RequisitarConversationSchema(Schema):
         arbitrary_types_allowed = True
 
 
-class SolicitacaoServicoIn(Schema):
+class SolicitacaoServicoCreate(Schema):
     cliente_id: int
     funcionario_id: Optional[int] = None
     servico_id: int
@@ -67,8 +67,10 @@ class SolicitacaoServicoIn(Schema):
     status: str = "pendente"
     duracao_meses: int
     descricao: Optional[str] = None
+    factura: Optional[str] = None
+    tem_factura: bool = False
 
-class SolicitacaoServicoOut(Schema):
+class SolicitacaoServico(Schema):
     id: int
     cliente_id: int
     funcionario_id: Optional[int]
@@ -79,4 +81,8 @@ class SolicitacaoServicoOut(Schema):
     duracao_meses: int
     data_inicial: date
     data_final: date
-    descricao: Optional[str]
+    descricao: Optional[str] = None
+    factura: Optional[str] = None
+    tem_factura: bool = False
+
+#declaracao_certificado: str = Field(..., title="Declaração de Certificado", description="Declaração de certificado do candidato.")    

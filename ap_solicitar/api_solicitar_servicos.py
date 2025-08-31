@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
 
+from schemas.schema_plano_negocio import PlanoNegocioInput, PlanoNegocioResponse
+
 
 from .models import WebsiteRequest, Objetivo
 from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServicoSchema
@@ -10,7 +12,7 @@ from utils.gemini import gerar_conteudo_secoes
 
 from datetime import timedelta
 from .models import SolicitacaoServico, Cliente, Servico, Funcionario
-from schemas.schemas_servico import SolicitacaoServicoOut, SolicitacaoServicoIn
+from schemas.schemas_servico import SolicitacaoServico, SolicitacaoServicoCreate
 from datetime import date
 from dateutil.relativedelta import relativedelta  # para somar meses
 
@@ -19,7 +21,7 @@ from dateutil.relativedelta import relativedelta  # para somar meses
 solicitar_router = Router()
 contacto_router = Router()
 
-@solicitar_router.post("/", response={200: dict, 400: dict})
+@solicitar_router.post("/website", response={200: dict, 400: dict})
 def solicitar_servicos_website(request, data: RequisitarServicoSchema):   
     
     website_request = WebsiteRequest.objects.create(
@@ -86,18 +88,88 @@ def solicitar_conversation_for_operation(request, data: RequisitarConversationSc
 
 
 
-@solicitar_router.post("/plano-negocio", response={200: dict, 400: dict})
-def solicitar_plano_negocio(request, data: RequisitarServicoSchema):   
+@solicitar_router.post("/gerar_plano_negocio", response=dict)
+def gerar_plano(request, data: PlanoNegocioInput):
+    dados_empresa = f"Tipo de negócio: {data.tipo_de_negocio}, Localização: {data.localizacao}"
+    secoes = gerar_conteudo_secoes(dados_empresa)
+    print(secoes["pesquisa_de_mercado"])
+    print(secoes["produtos_servicos"])
+    print(secoes["vendas_marketing"])
+    print(secoes["operacoes"])
+    print(secoes["financeiro"])
+    print(secoes["gestao"])
+    # 🚨 Aqui ainda será necessário transformar o texto retornado pelo Gemini
+    # em listas e dicionários (ex: SWOT, projeções etc.)
+    # Por agora, retorna tudo como strings simplificadas.
+    """
+    return {
+        "visao_geral": {
+            "resumo_executivo": secoes["visao_geral"],
+            "analise_swot": {
+                "forcas": ["A definir pela IA"],
+                "fraquezas": ["A definir pela IA"],
+                "oportunidades": ["A definir pela IA"],
+                "ameacas": ["A definir pela IA"],
+            },
+            "modelos_de_negocio": "Gerado pela IA",
+            "analise_viabilidade": "Gerado pela IA"
+        },
+        "pesquisa_de_mercado": {
+            "industria": data.tipo_de_negocio,
+            "visao_geral_industria": {
+                "participacao_mercado": "Gerado pela IA",
+                "penetracao_internet": "Gerado pela IA",
+                "volume_ecommerce": "Gerado pela IA"
+            },
+            "publico_alvo": "Gerado pela IA",
+            "tamanho_mercado_tendencias": {"info": "Gerado pela IA"},
+            "analise_concorrente": ["Gerado pela IA"]
+        },
+        "produtos_servicos": {
+            "ofertas_centrais": ["Gerado pela IA"],
+            "oportunidades_expansao": ["Gerado pela IA"],
+            "ofertas_secundarias": ["Gerado pela IA"],
+            "atendimento_cliente": "Gerado pela IA"
+        },
+        "vendas_marketing": {
+            "estrategia_marketing": "Gerado pela IA",
+            "canais_distribuicao": ["Gerado pela IA"],
+            "precificacao": "Gerado pela IA",
+            "metodos_pagamento": ["Gerado pela IA"]
+        },
+        "operacoes": {
+            "infraestrutura": "Gerado pela IA",
+            "logistica": "Gerado pela IA",
+            "parcerias": ["Gerado pela IA"],
+            "tecnologia": "Gerado pela IA"
+        },
+        "financeiro": {
+            "investimento_inicial": "Gerado pela IA",
+            "custos_fixos": "Gerado pela IA",
+            "custos_variaveis": "Gerado pela IA",
+            "fontes_receita": ["Gerado pela IA"],
+            "projecoes": {"ano1": "Gerado pela IA"}
+        },
+        "gestao": {
+            "equipe_fundadora": ["Gerado pela IA"],
+            "estrutura_organizacional": "Gerado pela IA",
+            "recursos_humanos": "Gerado pela IA"
+        }
+    }"""
+    return {
+        "visao_geral": secoes["visao_geral"],
+        "pesquisa_de_mercado": secoes["pesquisa_de_mercado"],
+        "produtos_servicos": secoes["produtos_servicos"],
+        "vendas_marketing": secoes["vendas_marketing"],
+        "operacoes": secoes["operacoes"],
+        "financeiro": secoes["financeiro"],
+        "gestao": secoes["gestao"]
+    }
 
-    plano_negocio = gerar_conteudo_secoes(data)
-
-    return 200, {"message": "Plano de negócio gerado com sucesso.", "data": plano_negocio}
 
 
-
-
-@solicitar_router.post("/solicitacoes/", response=SolicitacaoServicoOut)
-def criar_solicitacao(request, payload: SolicitacaoServicoIn):
+@solicitar_router.post("/solicitacoes/", response=SolicitacaoServico)
+def criar_solicitacao(request, payload: SolicitacaoServicoCreate):
     cliente = get_object_or_404(Cliente, id=payload.cliente_id)
     servico = get_object_or_404(Servico, id=payload.servico_id)
 
@@ -119,25 +191,27 @@ def criar_solicitacao(request, payload: SolicitacaoServicoIn):
         data_inicial=data_inicial,
         data_final=data_final,
         descricao=payload.descricao,
+        #factura=payload.factura,
+        #tem_factura=payload.tem_factura
     )
     return solicitacao
 
 
 # Listar todas solicitações
-@solicitar_router.get("/solicitacoes/", response=list[SolicitacaoServicoOut])
+@solicitar_router.get("/solicitacoes/", response=list[SolicitacaoServico])
 def listar_solicitacoes(request):
     return SolicitacaoServico.objects.all()
 
 
 # Obter uma solicitação específica
-@solicitar_router.get("/solicitacoes/{solicitacao_id}", response=SolicitacaoServicoOut)
+@solicitar_router.get("/solicitacoes/{solicitacao_id}", response=SolicitacaoServico)
 def obter_solicitacao(request, solicitacao_id: int):
     return get_object_or_404(SolicitacaoServico, id=solicitacao_id)
 
 
 # Atualizar status ou outros campos
-@solicitar_router.put("/solicitacoes/{solicitacao_id}", response=SolicitacaoServicoOut)
-def atualizar_solicitacao(request, solicitacao_id: int, payload: SolicitacaoServicoIn):
+@solicitar_router.put("/solicitacoes/{solicitacao_id}", response=SolicitacaoServico)
+def atualizar_solicitacao(request, solicitacao_id: int, payload: SolicitacaoServicoCreate):
     solicitacao = get_object_or_404(SolicitacaoServico, id=solicitacao_id)
 
     for attr, value in payload.dict().items():
@@ -154,3 +228,4 @@ def deletar_solicitacao(request, solicitacao_id: int):
     solicitacao = get_object_or_404(SolicitacaoServico, id=solicitacao_id)
     solicitacao.delete()
     return {"success": True, "message": "Solicitação removida com sucesso"}
+

@@ -82,11 +82,13 @@ class SolicitacaoServico(models.Model):
     duracao_meses = models.PositiveIntegerField(default=1)
     data_final = models.DateField(blank=True, null=True)
     data_pagamento = models.DateField(blank=True, null=True)
+    factura_servico = models.FileField(upload_to="temporarias/")
+    tem_factura = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.data_inicio and self.duracao_meses:
             self.data_final = self.data_inicio + relativedelta(months=self.duracao_meses)
-            self.data_pagamento = self.data_final  # <- aqui pode mudar a regra se quiser (ex: data_inicio + 1 mês)
+            self.data_pagamento = self.data_final  
         super().save(*args, **kwargs)
 
     def __str__(self):
