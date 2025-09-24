@@ -12,7 +12,10 @@ router_servicos = Router()
 # ----------------- SERVIÇOS -----------------
 @router_servicos.get("/servicos", response=list[ServicoSchema])
 def listar_servicos(request):
-    return list(Servico.objects.all())
+   servico = list(Servico.objects.all())
+   #return   { "servicos": ServicoSchema.model_validate(servico).model_dump(),}
+   return servico
+ 
 
 @router_servicos.post("/servicos", response=ServicoSchema)
 def criar_servico(request, data: ServicoCreateSchema):
@@ -22,16 +25,8 @@ def criar_servico(request, data: ServicoCreateSchema):
 # ----------------- PLANOS -----------------
 @router_servicos.get("/planos", response=list[PlanoSchema])
 def listar_planos(request):
-    return [
-        {
-            "id": plano.id,
-            "titulo": plano.titulo,
-            "descricao": plano.descricao,
-            "preco_mensal": float(plano.preco_mensal),
-            "servicos": [s.id for s in plano.servicos.all()]
-        }
-        for plano in Plano.objects.prefetch_related("servicos").all()
-    ]
+    planos = list(Plano.objects.all())
+    return planos
 
 @router_servicos.post("/planos", response=PlanoSchema)
 def criar_plano(request, data: PlanoCreateSchema):

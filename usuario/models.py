@@ -1,26 +1,47 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
 import uuid
-from django.utils import timezone
+#from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+
 
 
 # --------------------
 # Usuário base
 # --------------------
-class Usuario(models.Model):
-    ROLE_CHOICES = [
-        ("cliente", "Cliente"),
-        ("funcionario", "Funcionário"),
-    ]
+
+class UsuarioManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("O usuário precisa de um email")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(email, password, **extra_fields)
+
+
+class Usuario(AbstractBaseUser, PermissionsMixin):
     nome_completo = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    senha = models.CharField(max_length=128, editable=False)
+    #senha = models.CharField(max_length=128, editable=False)
     telefone = models.CharField(max_length=15, blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)  # acesso ao admin
+    is_active = models.BooleanField(default=True)
 
-    tipo = models.CharField(max_length=20, choices=ROLE_CHOICES, default="cliente")
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["nome_completo"]
 
+    objects = UsuarioManager()
+    
+    
     def __str__(self):
         return self.nome_completo
 
@@ -29,12 +50,15 @@ class Usuario(models.Model):
 
     def check_senha(self, raw_password):
         return check_password(raw_password, self.senha)
-
-class Cliente(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.usuario.username
+        
+    @property     
+    def tipo_usuario(self):
+        tipos = []
+        if hasattr(self, "cliente"):
+            tipos.append("Cliente")
+        if hasattr(self, "funcionario"):
+            tipos.append("Funcionário")
+        return " / ".join(tipos) if tipos else "Usuário comum"
 
 class EmailVerification(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
@@ -42,71 +66,51 @@ class EmailVerification(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
 
-# --------------------
-# Perfil (dados pessoais)
-# --------------------
+# ----------------------#
+# Perfil (dados pessoais) #
+# ------------------------#
 class Perfil(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name="perfil")
-
-    nome = models.CharField(max_length=150)
-    sobrenome = models.CharField(max_length=150)
-    email = models.EmailField()
-    contacto = models.CharField(max_length=20, blank=True, null=True)
+    sobrenome = models.CharField(max_length=150, blank=True, null=True)
     contacto_whatsapp = models.CharField(max_length=20, blank=True, null=True)
-    localidade = models.CharField(max_length=100, blank=True, null=True)
-    cidade = models.CharField(max_length=100, blank=True, null=True)
-    pais = models.CharField(max_length=100, blank=True, null=True)
-    endereco1 = models.CharField(max_length=200, blank=True, null=True)
-    endereco2 = models.CharField(max_length=200, blank=True, null=True)
-
 
     def __str__(self):
         return f"Perfil de {self.usuario.nome_completo}"
 
-class EnderecoPessoal(models.Model):
-    usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, related_name="dados_pessoais", null=True, blank=True
-    )
-    rua = models.CharField(max_length=200)
-    numero = models.CharField(max_length=50, blank=True, null=True)
-    bairro = models.CharField(max_length=100, blank=True, null=True)
-    cidade = models.CharField(max_length=100, blank=True, null=True)
-    provincia = models.CharField(max_length=100, blank=True, null=True)
-    codigo_postal = models.CharField(max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.rua}, {self.cidade} - {self.provincia}"
 
 # --------------------
 # Empresa (dados empresariais)
 # --------------------
 class Empresa(models.Model):
-    usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, related_name="dados_empresariais", null=True, blank=True
-    )
     nome_empresa = models.CharField(max_length=200)
     nif = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField()
     contacto = models.CharField(max_length=20, blank=True, null=True)
     contacto_whatsapp = models.CharField(max_length=20, blank=True, null=True)
-    
+
+    dono_empresa = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, related_name="empresas", null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.nome_empresa} (NIF: {self.nif})"
     
-class EnderecoEmpresa(models.Model):
-    empresa = models.OneToOneField(
-        Empresa, on_delete=models.CASCADE, related_name="dados_empresa", null=True, blank=True
-    )
+class Endereco(models.Model):
+    
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="enderecospessoal", null=True, blank=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name="enderecosempresa", null=True, blank=True)
+
     rua = models.CharField(max_length=200)
-    numero = models.CharField(max_length=50, blank=True, null=True)
     bairro = models.CharField(max_length=100, blank=True, null=True)
     cidade = models.CharField(max_length=100, blank=True, null=True)
     provincia = models.CharField(max_length=100, blank=True, null=True)
+    pais = models.CharField(max_length=100, blank=True, null=True)
     codigo_postal = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return f"{self.rua}, {self.cidade} - {self.provincia}"
+
+
 
 class Preferencias(models.Model):
     usuario = models.OneToOneField(
@@ -134,13 +138,3 @@ class Preferencias(models.Model):
 
     def __str__(self):
         return f"Preferências de {self.usuario.usuario.nome_completo}"
-
-class Notificacao(models.Model):
-    usuario = models.ForeignKey("Usuario", on_delete=models.CASCADE, related_name="notificacoes")
-    titulo = models.CharField(max_length=200)
-    mensagem = models.TextField()
-    lida = models.BooleanField(default=False)
-    criada_em = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f"{self.usuario} - {self.titulo}"

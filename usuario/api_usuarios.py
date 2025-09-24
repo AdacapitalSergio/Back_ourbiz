@@ -10,83 +10,94 @@ from datetime import datetime, timedelta
 import jwt # type: ignore
 import uuid
 
+from ninja.errors import HttpError
 
-
+from cliente.models import Cliente
+from funcionario.models import Funcionario
 from utils.auth import SECRET_KEY
+
 from utils.auth import auth
 from utils.solicitacao_website_email import send_verification_email
 
-from .models import EmailVerification, Empresa, EnderecoEmpresa, EnderecoPessoal, Preferencias, Usuario, Perfil
+from .models import EmailVerification, Empresa, Endereco, Preferencias, Usuario, Perfil
+
 from schemas.schemas_usuario import( 
-    EmpresaSchema, EnderecoCreateSchema, EnderecoSchema, PreferenciasCreateSchema, UsuarioCreateSchema, UsuarioSchema,
-    EmpresaCreateSchema, PerfilSchema, LinkEmailSchema, LoginSchema, RedefinirSenhaSchema,
-    LinkEmailSchema, LoginSchema, RedefinirSenhaSchema, LinkEmailSchema, LoginSchema, RedefinirSenhaSchema
+      
+      EmpresaSchema, EnderecoCreateSchema, EnderecoSchema, PreferenciasCreateSchema,
+      UsuarioCreateSchema, UsuarioSchema,EmpresaCreateSchema, PerfilSchema, LinkEmailSchema,
+      LoginSchema, RedefinirSenhaSchema,LinkEmailSchema, LoginSchema, RedefinirSenhaSchema, 
+      LinkEmailSchema, LoginSchema, RedefinirSenhaSchema
+    
     )
 
 
 usuario_router = Router()
 empresa_router = Router()
+endereco_router = Router()
 auth_router = Router()
 redefinir_router = Router()
 
-# -------------------------
-# AUTENTICAÇÃO DE USUÁRIO
-# -------------------------
+# ------------------------#
+# AUTENTICAÇÃO DE USUÁRIO #
+# ------------------------#
 @auth_router.post("/login", response=dict)
-def login(request, data: LoginSchema):
-    
-    usuario = Usuario.objects.filter(email=data.email).first()
-    #usuario = get_object_or_404(Usuario, id=usuario_id)
-    if not usuario or not usuario.check_senha(data.senha):
-        raise HTTPException(status_code=401, detail="Credenciais inválidas")
- 
-    payload = {
+def login(request, payload: LoginSchema):
+    usuario = get_object_or_404(Usuario, email=payload.email)
+
+    # agora usa o método correto
+    if not usuario.check_password(payload.password):
+        raise HttpError(401, "Credenciais inválidas")
+
+    if not usuario.is_verified:   # <-- aqui estava invertido
+        raise HttpError(401, "Conta não verificada, por favor verifique o teu email")
+
+    payload_token = {
         "user_id": usuario.id,
         "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRATION_MINUTES),
-        "role": usuario.role if hasattr(usuario, "role") else "user"  # Exemplo de adição de permissão
     }
-    token = jwt.encode(payload, SECRET_KEY, algorithm=settings.ALGORITHM)
+    token = jwt.encode(payload_token, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
     return {
-        "access_token": token, 
-        "token_type": "bearer", 
-        "usuario": UsuarioSchema.model_validate(usuario).model_dump()
-        }
+        "access_token": token,
+        "token_type": "bearer",
+        "usuario": UsuarioSchema.model_validate(usuario).model_dump(),
+    }
 
 # -------------------------
 # RECUPERAR CONTA
 # -------------------------
 @auth_router.post("/recuperacao-conta")
-def recuperar_conta(request, dados: LinkEmailSchema):
+def recuperar_conta(request, payload: LinkEmailSchema):
     """
     Endpoint para iniciar o processo de recuperação de conta.
     Mesmo que o email não esteja cadastrado, a resposta é padronizada
     para evitar a enumeração de usuários.
     """
-    usuario = Usuario.objects.filter(email=dados.email).first()
+    usuario = Usuario.objects.filter(email=payload.email).first()
     if not usuario:
         # Retorna a mesma mensagem mesmo que o usuário não exista
         return {"mensagem": "Se o email existir, um link de recuperação foi enviado."}
     
     # Cria o payload para o token de recuperação
-    payload = {
+    payload_token = {
         "id_usuario": usuario.id,
         "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRATION_MINUTES)
     }
-    token_recuperacao = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    token_recuperacao = jwt.encode(payload_token, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     #link_recuperacao = f"http://localhost:8000/api/clientes/redefinir-senha?token={token_recuperacao}"
     msg_link = "clique no link para recuperar a senha."
     # Envia o email de recuperação (idealmente, de forma assíncrona, por exemplo, com Celery)
     send_verification_email.delay(
         usuario.nome_completo,
-        dados.link_recuperacao,
+        payload.link_recuperacao,
         usuario.email,
         msg_link,
     )
 
-    return {"mensagem": f"Se o email existir, um link de recuperação foi enviado.{dados.link_recuperacao}",
+    return {
+            "mensagem": f"Se o email existir, um link de recuperação foi enviado.{payload.link_recuperacao}",
             "token": f"{token_recuperacao}"
-            }
+        }    
 
 # -------------------------
 # REDEFINIR SENHA
@@ -95,7 +106,7 @@ def recuperar_conta(request, dados: LinkEmailSchema):
 def redefinir_senha(request, dados: RedefinirSenhaSchema, token: str = None):
     
     token = token
-    nova_senha = dados.new_password
+   
     if not token:
         return {"mensagem": "Token de recuperação não fornecido."}, 400
 
@@ -111,8 +122,7 @@ def redefinir_senha(request, dados: RedefinirSenhaSchema, token: str = None):
         usuario = Usuario.objects.get(id=id_usuario)
     except Usuario.DoesNotExist:
         return {"mensagem": "Usuário não encontrado."}
-
-    usuario.set_senha(nova_senha)
+    usuario.set_password(dados.new_password)  # ✅ método correto
     usuario.save()
 
     return {"mensagem": "Senha redefinida com sucesso."}
@@ -139,48 +149,61 @@ def obter_usuario(request, usuario_id: int):
 # -------------------------
 @usuario_router.post("/", response={200: dict, 400: dict})
 def criar_usuario(request, data: UsuarioCreateSchema):
-    """Cria um novo usuário e envia e-mail de verificação"""
+    """Cria um usuário base (sem empresa/endereços ainda)."""
 
-    # Verificar se o e-mail já existe
-    if Usuario.objects.filter(email=data.email).exists():
-        return 400, {"error": "E-mail já cadastrado"}
+    usuario = Usuario.objects.filter(email=data.email).first()
+    if usuario:
+        return 400, {"error": "Já existe um usuário com este e-mail"}
 
-    # Criar usuário com senha criptografada
     usuario = Usuario.objects.create(
         nome_completo=data.nome_completo,
         email=data.email,
         telefone=data.telefone,
-        senha=make_password(data.senha),  # Criptografar senha
-        tipo=data.tipo
     )
+    usuario.set_password(data.password)   # ✅ agora usa set_password
 
-    # Criar token de verificação
-    verification = EmailVerification.objects.create(usuario=usuario, token=uuid.uuid4())
+    # Definir role inicial
+    if data.logar_como == "cliente":
+        Cliente.objects.create(usuario=usuario)
+        usuario.is_cliente = True
+    if data.logar_como == "funcionario":
+        Funcionario.objects.create(usuario=usuario)
+        usuario.is_funcionario = True
 
-    # Criar link de verificação
-    #verification_link = f"http://localhost:8000/api/usuario/verify-email/{verification.token}/"
+    usuario.save()
+
+    # Criar verificação de e-mail
+    verification = EmailVerification.objects.create(
+        usuario=usuario,
+        token=uuid.uuid4()
+    )
     verification_link = f"https://api.v1.ourbiz:8000/api/usuario/verify-email/{verification.token}/"
-    # Enviar e-mail de confirmação
-    msg_link = "clique no link para confirmar seu e-mail"
-# Chamar a função de envio assíncrono
     send_verification_email.delay(
         usuario.nome_completo,
         verification_link,
         usuario.email,
-        msg_link,
+        "Clique no link para confirmar seu e-mail"
     )
+
+    # Criar JWT
     payload = {
         "user_id": usuario.id,
         "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRATION_MINUTES),
-        "role": usuario.role if hasattr(usuario, "role") else "user"  # Exemplo de adição de permissão
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=settings.ALGORITHM)
 
+    # Retorno no mesmo formato do login
     return {
-        "access_token": token, 
-        "token_type": "bearer", 
-        "usuario": UsuarioSchema.model_validate(usuario).model_dump()
-        }
+        "access_token": token,
+        "token_type": "bearer",
+        "usuario": {
+            **UsuarioSchema.model_validate(usuario).model_dump(),
+            #"enderecos": [EnderecoSchema().model_dump()],   # molde de endereço
+            #"empresas": [EmpresaSchema().model_dump()]      # molde de empresa
+        },
+    "logar_como": data.logar_como
+}
+
 
 # -------------------------
 # VERIFICAÇÃO DE E-MAIL
@@ -199,18 +222,19 @@ def verify_email(request, token: str):
     return {"message": "E-mail confirmado com sucesso!"}
 
 # -------------------------
-# ACTUALISAR USUÁRIO
+# ATUALIZAR USUÁRIO
 # -------------------------
 @usuario_router.put("/{usuario_id}", response=UsuarioSchema)
 def atualizar_usuario(request, usuario_id: int, data: UsuarioCreateSchema):
-    """Atualiza um usuário existente"""
     usuario = get_object_or_404(Usuario, id=usuario_id)
     for field, value in data.dict(exclude_unset=True).items():
-        if field == "senha":  # Atualizar a senha apenas se fornecida
-            value = make_password(value)
-        setattr(usuario, field, value)
+        if field == "password":  
+            usuario.set_password(value)  # ✅ método correto
+        else:
+            setattr(usuario, field, value)
     usuario.save()
     return usuario
+
 
 # -------------------------
 #  DELETAR USUÁRIO
@@ -234,6 +258,8 @@ def criar_perfil_usuario(request, usuario_id: int, data: PerfilSchema):
     perfil = Perfil.objects.create(usuario_id=usuario_id, **data.dict())
     return 200, {"message": "Perfil criado com sucesso!", "dados_pessoais": perfil}
 
+#******************************* Fim de Perfil ************************************************
+
 # -------------------------
 # PREFERÊNCIAS DE USUÁRIO
 # -------------------------
@@ -243,37 +269,42 @@ def criar_preferencias(request, usuario_id: int, data: PreferenciasCreateSchema)
     preferencias = Preferencias.objects.create(usuario_id=usuario_id, **data.dict())
     return 200, {"message": "Preferências criadas com sucesso!", "dados_preferencias": preferencias}
 
+#******************************* Fim de Preferências ************************************************
 
-# -------------------------
-# Endereco DE USUÁRIO
-# -------------------------
+#-------------------------
+# Endereco DE USUÁRIO    :
+#-------------------------
 
-@usuario_router.post("/{usuario_id}/enderecos", response=EnderecoSchema)
-def criar_endereco(request, usuario_id: int, data: EnderecoCreateSchema):
+# Criar endereço (pessoal ou empresarial)
+@endereco_router.post("/{usuario_id}/pessoal", response=EnderecoSchema)
+def criar_endereco_pessoal(request, usuario_id: int, data: EnderecoCreateSchema):
     usuario = get_object_or_404(Usuario, id=usuario_id)
-    if not usuario:
-        return {"error": "Usuário não encontrado"}, 404
-    endereco = EnderecoPessoal.objects.create(usuario_id=usuario_id, **data.dict())
+    endereco = Endereco.objects.create(usuario=usuario, **data.dict())
     return endereco
 
+@endereco_router.post("/enderecos/{empresa_id}/empresa", response=EnderecoSchema)
+def criar_endereco_empresa(request, empresa_id: int, data: EnderecoCreateSchema):
+    empresa = get_object_or_404(Empresa, id=empresa_id)
+    endereco = Endereco.objects.create(empresa=empresa, **data.dict())
+    return endereco
 
-# Listar endereços de uma empresa
-@usuario_router.get("/{usuario_id}/enderecos", response=list[EnderecoSchema])
+# Listar endereços de um usuário
+@endereco_router.get("/{usuario_id}/enderecos", response=list[EnderecoSchema])
 def listar_enderecos(request, usuario_id: int):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     return usuario.enderecos.all()
 
 
 # Buscar um endereço específico
-@usuario_router.get("/enderecos/{endereco_id}", response=EnderecoSchema)
+@endereco_router.get("/enderecos/{endereco_id}", response=EnderecoSchema)
 def detalhe_endereco(request, endereco_id: int):
-    return get_object_or_404(EnderecoPessoal, id=endereco_id)
+    return get_object_or_404(Endereco, id=endereco_id)
 
 
 # Atualizar endereço
-@usuario_router.put("/enderecos/{endereco_id}", response=EnderecoSchema)
+@endereco_router.put("/enderecos/{endereco_id}", response=EnderecoSchema)
 def atualizar_endereco(request, endereco_id: int, data: EnderecoCreateSchema):
-    endereco = get_object_or_404(EnderecoPessoal, id=endereco_id)
+    endereco = get_object_or_404(Endereco, id=endereco_id)
     for attr, value in data.dict().items():
         setattr(endereco, attr, value)
     endereco.save()
@@ -281,56 +312,55 @@ def atualizar_endereco(request, endereco_id: int, data: EnderecoCreateSchema):
 
 
 # Deletar endereço
-@usuario_router.delete("/enderecos/{endereco_id}")
+@endereco_router.delete("/enderecos/{endereco_id}")
 def deletar_endereco(request, endereco_id: int):
-    endereco = get_object_or_404(EnderecoPessoal, id=endereco_id)
+    endereco = get_object_or_404(Endereco, id=endereco_id)
     endereco.delete()
     return {"success": True, "message": "Endereço removido com sucesso"}
 
-# -------------------------
-# EMPRESA DE USUÁRIO
-# -------------------------
-@empresa_router.post("/{usuario_id}/empresa", response={200: dict, 400: dict})
-def criar_empresa_usuario(request, usuario_id: int, data: EmpresaCreateSchema):
-    empresa = Empresa.objects.create(usuario_id=usuario_id, **data.dict())
-    return 200, {"message": "Empresa criada com sucesso!", "dados_empresa": empresa}
     
+#******************************* Fim de Endereços ************************************************
 
-@empresa_router.post("/{empresa_id}/enderecos", response=EnderecoSchema)
-def criar_endereco_empresa(request, empresa_id: int, data: EnderecoCreateSchema):
+# ------------------------
+# Empresa DE USUÁRIO     :
+# ------------------------
+
+# Criar empresa para um usuário (dono)
+@empresa_router.post("/{usuario_id}/", response=EmpresaSchema)
+def criar_empresa_usuario(request, usuario_id: int, data: EmpresaCreateSchema):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    empresa = Empresa.objects.create(dono_empresa=usuario, **data.dict())
+    return empresa
+
+
+# Listar empresas de um usuário
+@empresa_router.get("/{usuario_id}/", response=list[EmpresaSchema])
+def listar_empresas_usuario(request, usuario_id: int):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    return usuario.empresas.all()
+
+
+# Buscar uma empresa específica
+@empresa_router.get("/{empresa_id}", response=EmpresaSchema)
+def detalhe_empresa(request, empresa_id: int):
+    return get_object_or_404(Empresa, id=empresa_id)
+
+
+# Atualizar empresa
+@empresa_router.put("/{empresa_id}", response=EmpresaSchema)
+def atualizar_empresa(request, empresa_id: int, data: EmpresaCreateSchema):
     empresa = get_object_or_404(Empresa, id=empresa_id)
-    if not empresa:
-        return {"error": "Empresa não encontrada"}, 404
-    endereco = EnderecoEmpresa.objects.create(empresa=empresa, **data.dict())
-    return endereco
-
-
-# Listar endereços de uma empresa
-@empresa_router.get("/{empresa_id}/enderecos", response=list[EnderecoSchema])
-def listar_enderecos_empresa(request, empresa_id: int):
-    empresa = get_object_or_404(Empresa, id=empresa_id)
-    return empresa.enderecos.all()
-
-
-# Buscar um endereço específico
-@empresa_router.get("/enderecos/{endereco_id}", response=EnderecoSchema)
-def detalhe_endereco_empresa(request, endereco_id: int):
-    return get_object_or_404(EnderecoEmpresa, id=endereco_id)
-
-
-# Atualizar endereço
-@empresa_router.put("/enderecos/{endereco_id}", response=EnderecoSchema)
-def atualizar_endereco_empresa(request, endereco_id: int, data: EnderecoCreateSchema):
-    endereco = get_object_or_404(EnderecoEmpresa, id=endereco_id)
     for attr, value in data.dict().items():
-        setattr(endereco, attr, value)
-    endereco.save()
-    return endereco
+        setattr(empresa, attr, value)
+    empresa.save()
+    return empresa
 
 
-# Deletar endereço
-@empresa_router.delete("/enderecos/{endereco_id}")
-def deletar_endereco_empresa(request, endereco_id: int):
-    endereco = get_object_or_404(EnderecoEmpresa, id=endereco_id)
-    endereco.delete()
-    return {"success": True, "message": "Endereço removido com sucesso"}
+# Deletar empresa
+@empresa_router.delete("/{empresa_id}")
+def deletar_empresa(request, empresa_id: int):
+    empresa = get_object_or_404(Empresa, id=empresa_id)
+    empresa.delete()
+    return {"success": True, "message": "Empresa removida com sucesso"}
+
+#******************************* Fim de Empresas ************************************************

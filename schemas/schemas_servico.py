@@ -62,7 +62,7 @@ class SolicitacaoServicoCreate(Schema):
     cliente_id: int
     funcionario_id: Optional[int] = None
     servico_id: int
-    tipo_servico: str
+    tipo_servico: str = "corrente"
     valor: float
     status: str = "pendente"
     duracao_meses: int

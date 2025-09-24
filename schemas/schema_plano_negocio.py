@@ -1,7 +1,6 @@
 # backend/api/plano_negocio.py
-from ninja import Router, Schema
+from ninja import Schema
 
-plano_router = Router()
 
 
 # ---------- Schemas ----------
@@ -83,72 +82,3 @@ class PlanoNegocioInput(Schema):
     tipo_de_negocio: str
     localizacao: str
 
-
-# ---------- Endpoint ----------
-@plano_router.post("/gerar", response=PlanoNegocioResponse)
-def gerar_plano(request, data: PlanoNegocioInput):
-
-    # 🚀 Aqui é onde entraria a chamada ao Gemini ou outra IA
-    # Por enquanto vou retornar mock de exemplo
-
-    return {
-        "visao_geral": {
-            "resumo_executivo": f"Plano de negócio para {data.tipo_de_negocio} em {data.localizacao}.",
-            "analise_swot": {
-                "forcas": ["Equipe experiente", "Parcerias internacionais"],
-                "fraquezas": ["Capital inicial limitado", "Dependência de importações"],
-                "oportunidades": ["Crescimento do e-commerce", "Demanda por tecnologia"],
-                "ameacas": ["Concorrência internacional", "Instabilidade econômica"],
-            },
-            "modelos_de_negocio": "Marketplace B2C e B2B",
-            "analise_viabilidade": "Viável considerando o crescimento do setor."
-        },
-        "pesquisa_de_mercado": {
-            "industria": data.tipo_de_negocio,
-            "visao_geral_industria": {
-                "participacao_mercado": "20%",
-                "penetracao_internet": "39%",
-                "volume_ecommerce": "$720M"
-            },
-            "publico_alvo": "Jovens urbanos de 18 a 35 anos.",
-            "tamanho_mercado_tendencias": {
-                "crescimento_ecommerce": "US$ 152M até 2025",
-                "taxa_crescimento_anual": "14,4%"
-            },
-            "analise_concorrente": ["Lojas físicas locais", "Amazon", "AliExpress"]
-        },
-        "produtos_servicos": {
-            "ofertas_centrais": ["Smartphones", "Tablets"],
-            "oportunidades_expansao": ["Manutenção", "Consultoria"],
-            "ofertas_secundarias": ["Capinhas", "Carregadores"],
-            "atendimento_cliente": "Suporte online 24/7"
-        },
-        "vendas_marketing": {
-            "estrategia_marketing": "Foco em redes sociais",
-            "canais_distribuicao": ["Loja online", "Marketplaces"],
-            "precificacao": "Competitiva",
-            "metodos_pagamento": ["Cartão", "Multicaixa Express", "Unitel Money"]
-        },
-        "operacoes": {
-            "infraestrutura": "Loja online e armazém central",
-            "logistica": "Parcerias com transportadoras",
-            "parcerias": ["Fornecedores internacionais"],
-            "tecnologia": "Plataforma de e-commerce robusta"
-        },
-        "financeiro": {
-            "investimento_inicial": "US$ 100.000",
-            "custos_fixos": "US$ 5.000/mês",
-            "custos_variaveis": "Dependem das vendas",
-            "fontes_receita": ["Venda de produtos", "Serviços"],
-            "projecoes": {
-                "ano1": "US$ 250.000",
-                "ano3": "US$ 750.000",
-                "ano5": "US$ 2M"
-            }
-        },
-        "gestao": {
-            "equipe_fundadora": ["CEO", "COO", "CMO"],
-            "estrutura_organizacional": "Equipe enxuta",
-            "recursos_humanos": "Expansão planejada para 10 colaboradores"
-        }
-    }

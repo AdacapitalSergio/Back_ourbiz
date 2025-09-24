@@ -2,10 +2,10 @@ from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta  # melhor para meses
 
 from django.db import models
-from usuario.models import Cliente
+from cliente.models import Cliente
 from funcionario.models import Funcionario
+from servico.models import Servico, Plano
 # Create your models here.
-from django.db import models
 
 TEM_DOMINIO_CHOICES = [
     ('Sim', 'Sim'),
@@ -44,6 +44,7 @@ class WebsiteRequest(models.Model):
     
 
 
+"""
 class Servico(models.Model):
     nome = models.CharField(max_length=150)
     descricao = models.TextField()
@@ -57,18 +58,32 @@ class Servico(models.Model):
     def __str__(self):
         return self.nome
 
+class Servico(models.Model):
+    nome = models.CharField(max_length=150)
+    descricao = models.TextField()
+    tipo = models.CharField(max_length=50, choices=[
+        ("consultoria_pequenas_empresas", "Consultoria para Pequenas Empresas"),
+        ("consultoria_startups", "Consultoria para Startups"),
+        ("outros", "Outros")
+    ])
+    preco_base = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.nome
+"""
 
 class SolicitacaoServico(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     funcionario = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
     servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
+    plano = models.ForeignKey(Plano, on_delete=models.CASCADE)
 
     tipo_servico = models.CharField(max_length=50, choices=[
         ("corrente", "Corrente"),
         ("avulso", "Avulso")
-    ])
+    ], default="corrente")
 
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    valor = models.DecimalField(max_digits=10, decimal_places=3)
     status = models.CharField(max_length=30, choices=[
         ("pendente", "Pendente"),
         ("aprovado", "Aprovado"),
@@ -92,4 +107,4 @@ class SolicitacaoServico(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.servico.nome} - {self.cliente.user.username} ({self.status})"
+        return f"{self.servico.nome} - {self.cliente.usuario.nome_completo} ({self.status})"

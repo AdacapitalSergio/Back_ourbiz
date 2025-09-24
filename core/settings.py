@@ -16,7 +16,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+AUTH_USER_MODEL = "usuario.Usuario"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -86,8 +86,10 @@ INSTALLED_APPS = [
     'ninja',
     'ap_solicitar',
     'usuario',
+    'cliente',
     'funcionario',
     'servico',
+    'notificacoes',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +137,7 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+#AUTH_USER_MODEL = "usuario.Usuario"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -184,16 +187,12 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-#EMAIL_HOST = "mail.adacapital.ao"  # Servidor SMTP do seu e-mail empresarial
 EMAIL_HOST = "smtp.gmail.com"  # Servidor SMTP do Gmail
-EMAIL_PORT = 587  # Use 465 para SSL ou 587 para TLS
-EMAIL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
-EMAIL_USE_SSL = False  # Se usar SSL (porta 465), defina como True
-EMAIL_HOST_USER = "adelinoemilianoa@gmail.com"  # Seu e-mail empresarial
-EMAIL_HOST_PASSWORD = "sbfl ucob pajy tklq"  # Substitua pela senha correta#X
+EMAIL_PORT = 587  # Porta SMTP padrão para TLS
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "adelinoemilianoa@gmail.com"  # Substitua pelo seu e-mail
+EMAIL_HOST_PASSWORD = "sbfl ucob pajy tklq"  # Substitua pela senha ou use "App Password"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Configuração do Redis como backend do Celery
@@ -214,7 +213,7 @@ EMAIL_PORT = 587  # Use 465 para SSL ou 587 para TLS
 EMAIL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
 EMAIL_USE_SSL = False  # Se usar SSL (porta 465), defina como True
 EMAIL_HOST_USER = "comercial@ourbiz.ao"  # Seu e-mail empresarial
-EMAIL_HOST_PASSWORD = "#Ou!928003757!Bi*"  # Substitua pela senha correta#X
+EMAIL_HOST_PASSWORD = "#M936059607D*"  # Substitua pela senha correta#X
 
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"

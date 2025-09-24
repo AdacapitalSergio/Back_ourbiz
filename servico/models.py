@@ -13,8 +13,8 @@ class Servico(models.Model):
 class Plano(models.Model):
     titulo = models.CharField(max_length=100)
     descricao = models.TextField()
-    preco_mensal = models.DecimalField(max_digits=10, decimal_places=2)
-    servicos = models.ManyToManyField(Servico, related_name="planos")
+    preco_mensal = models.DecimalField(max_digits=10, decimal_places=3)
+    servicos = models.ForeignKey(Servico, on_delete=models.CASCADE, related_name="planos")
 
     def __str__(self):
         return self.titulo
@@ -26,4 +26,4 @@ class Beneficio(models.Model):
     plano = models.ForeignKey(Plano, on_delete=models.CASCADE, related_name="beneficios")
 
     def __str__(self):
-        return f"{self.titulo} ({self.plano.titulo})"
+        return f"{self.titulo} ({self.plano.titulo}) ({self.plano.servicos})"

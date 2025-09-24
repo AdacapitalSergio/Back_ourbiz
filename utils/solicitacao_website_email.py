@@ -17,6 +17,16 @@ def send_verification_email(cliente_nome, verification_link, cliente_email, msg_
     )
 
 @shared_task
+def send_confirmar_funcionario_email(verification_link, admin_email, msg_link):
+    send_mail(
+        "Confirme funcionario",
+        f"{msg_link}, {verification_link}",
+        settings.DEFAULT_FROM_EMAIL,
+        [admin_email],
+        fail_silently=False,
+    )    
+
+@shared_task
 def send_email_for_operation(cliente_nome, servico, cidade, municipio, area_atuacao, telefone, cliente_email):
     image_url = "IMG_20250403_111108_173.jpg"
     email_subject = "📌 Solicitação de Serviço"

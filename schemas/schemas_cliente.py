@@ -1,6 +1,6 @@
 from ninja import Schema
 from typing import Optional
-from pydantic import ConfigDict, EmailStr, Field
+from pydantic import ConfigDict, EmailStr
 from schemas.schemas_usuario import UsuarioSchema, EmpresaSchema
 
 #, , ,, telefone, cliente_email
@@ -12,4 +12,4 @@ class ClienteSchema(Schema):
 
 class ClienteCreateSchema(Schema):
     usuario_id: int
-    empresa_id: Optional[int] = None  # opcional
+    #empresa_id: Optional[int] = None  # opcional
