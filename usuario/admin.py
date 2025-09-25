@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Usuario, EmailVerification, Perfil, Empresa, Endereco, Preferencias
+from .models import Usuario, Empresa, Endereco, Empresa, Endereco, Preferencias
 
 
 # --------------------
@@ -29,3 +29,16 @@ class UsuarioAdmin(UserAdmin):
             "fields": ("email", "nome_completo", "telefone", "password1", "password2", "is_staff", "is_active"),
         }),
     )
+
+
+@admin.register(Empresa)
+class EmpresaAdmin(admin.ModelAdmin):
+    list_display = ("nome_empresa", "nif", "email", "contacto", "contacto_whatsapp", "dono_empresa")
+    search_fields = ("nome_empresa", "nif", "email")
+    list_filter = ("dono_empresa",)
+
+@admin.register(Endereco)
+class EnderecoAdmin(admin.ModelAdmin):
+    list_display = ("rua", "bairro", "cidade", "provincia", "pais", "codigo_postal", "usuario", "empresa")
+    search_fields = ("rua", "cidade", "provincia", "pais")
+    list_filter = ("cidade", "provincia", "pais")
