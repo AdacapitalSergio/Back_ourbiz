@@ -45,7 +45,7 @@ def login(request, payload: LoginSchema):
     usuario = get_object_or_404(Usuario, email=payload.email)
 
     # agora usa o método correto
-    if not usuario.check_password(payload.password):
+    if not usuario.check_password(payload.senha):
         raise HttpError(401, "Credenciais inválidas")
 
     if not usuario.is_verified:   # <-- aqui estava invertido

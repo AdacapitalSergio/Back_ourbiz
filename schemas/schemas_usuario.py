@@ -35,13 +35,13 @@ class UsuarioSchema(Schema):
 
     model_config = ConfigDict(from_attributes=True)
 
-class UsuarioCreateSchema(Schema):
+"""class UsuarioCreateSchema(Schema):
     nome_completo: str = Field(..., title="Nome completo do usuário", min_length=2, max_length=100)
     email: EmailStr = Field(..., title="Email do usuário")
     telefone: str = Field(..., title="Telefone/WhatsApp do usuário", pattern=r"^\d{9,15}$")
     password: str = Field(..., title="Senha do usuário", min_length=6, max_length=128)
     logar_como: Optional[TipoUsuario] = Field( title=" cliente | funcionario")
-
+"""
 class EnderecoSchema(Schema):
     rua: str
     numero: Optional[str] = None
@@ -116,7 +116,7 @@ class EnderecoCreateSchema(Schema):
 
 class LoginSchema(Schema):
     email: str = Field(..., title="Email do usuário")
-    password: str = Field(..., title="Senha do usuário")
+    senha: str = Field(..., title="Senha do usuário")
      
     
 class ErrorSchema(Schema):
@@ -169,7 +169,7 @@ class UsuarioCreateSchema(Schema):
     nome_completo: str
     email: str
     telefone: str
-    password: str
+    senha: str
     is_verified: bool = False
     #logar_como: str  # cliente ou funcionario
     enderecos: Optional[List[EnderecoCreateSchema]] = None
