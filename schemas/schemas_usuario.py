@@ -171,6 +171,6 @@ class UsuarioCreateSchema(Schema):
     telefone: str
     senha: str
     is_verified: bool = False
-    #logar_como: str  # cliente ou funcionario
+    tipo_usuario: Optional[TipoUsuario] = Field( title=" cliente | funcionario")
     enderecos: Optional[List[EnderecoCreateSchema]] = None
     empresa: Optional[EmpresaCreateSchema] = None    
