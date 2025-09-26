@@ -157,8 +157,8 @@ def criar_usuario(request, data: UsuarioCreateSchema):
 
     usuario = Usuario.objects.create(
         nome_completo=data.nome_completo,
-        email=data.email,
         telefone=data.telefone,
+        email=data.email,
     )
     usuario.set_password(password)   # ✅ agora usa set_password
 
@@ -166,7 +166,7 @@ def criar_usuario(request, data: UsuarioCreateSchema):
     if data.tipo_usuario == "cliente":
         Cliente.objects.create(usuario=usuario)
         usuario.is_cliente = True
-    if data.logar_como == "funcionario":
+    if data.tipo_usuario == "funcionario":
         Funcionario.objects.create(usuario=usuario)
         usuario.is_funcionario = True
 
@@ -201,7 +201,7 @@ def criar_usuario(request, data: UsuarioCreateSchema):
             #"enderecos": [EnderecoSchema().model_dump()],   # molde de endereço
             #"empresas": [EmpresaSchema().model_dump()]      # molde de empresa
         },
-    "logar_como": data.logar_como
+    "logar_como": data.tipo_usuario
 }
 
 
