@@ -117,7 +117,7 @@ class EnderecoCreateSchema(Schema):
 class LoginSchema(Schema):
     email: str = Field(..., title="Email do usuário")
     password: str = Field(..., title="Senha do usuário")
-    logar_como: Optional[TipoUsuario] = Field( title=" cliente | funcionario") 
+     
     
 class ErrorSchema(Schema):
     error: str
@@ -159,6 +159,7 @@ class UsuarioSchema(Schema):
     email: str
     telefone: Optional[str] = None
     is_verified: bool
+    tipo_usuario: Optional[TipoUsuario] = Field( title=" cliente | funcionario")
     enderecospessoal: List[EnderecoSchema] = [EnderecoSchema()]  # já vem 1 molde
     empresas: List[EmpresaSchema] = [EmpresaSchema()]     # já vem 1 molde
 
@@ -170,6 +171,6 @@ class UsuarioCreateSchema(Schema):
     telefone: str
     password: str
     is_verified: bool = False
-    logar_como: str  # cliente ou funcionario
+    #logar_como: str  # cliente ou funcionario
     enderecos: Optional[List[EnderecoCreateSchema]] = None
     empresa: Optional[EmpresaCreateSchema] = None    

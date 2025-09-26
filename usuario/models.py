@@ -25,12 +25,18 @@ class UsuarioManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
 
+TIPO_USUARIO_CHOICES = [
+        ("cliente", "cliente"),
+        ("funcionario", "funcionario"),
+    ]
 
+    
 class Usuario(AbstractBaseUser, PermissionsMixin):
     nome_completo = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     #senha = models.CharField(max_length=128, editable=False)
     telefone = models.CharField(max_length=15, blank=True, null=True)
+    tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, default="cliente")
     criado_em = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)  # acesso ao admin
@@ -51,7 +57,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     def check_senha(self, raw_password):
         return check_password(raw_password, self.senha)
         
-    @property     
+""""    @property     
     def tipo_usuario(self):
         tipos = []
         if hasattr(self, "cliente"):
@@ -59,7 +65,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         if hasattr(self, "funcionario"):
             tipos.append("Funcionário")
         return " / ".join(tipos) if tipos else "Usuário comum"
-
+"""
 class EmailVerification(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     token = models.UUIDField(default=uuid.uuid4, unique=True)

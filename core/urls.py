@@ -30,6 +30,12 @@ api.add_router("/servicos/", router_servicos)
 api.add_router("/notificacoes/", notificacoes_router)
 
 
+
+admin.site.site_header = "Painel Administrativo OurBiz"
+admin.site.site_title = "OurBiz Admin"
+admin.site.index_title = "Bem-vindo! Aqui você pode gerir serviços, funcionários e clientes."
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', api.urls)

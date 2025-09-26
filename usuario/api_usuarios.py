@@ -163,7 +163,7 @@ def criar_usuario(request, data: UsuarioCreateSchema):
     usuario.set_password(data.password)   # ✅ agora usa set_password
 
     # Definir role inicial
-    if data.logar_como == "cliente":
+    if data.tipo_usuario == "cliente":
         Cliente.objects.create(usuario=usuario)
         usuario.is_cliente = True
     if data.logar_como == "funcionario":
