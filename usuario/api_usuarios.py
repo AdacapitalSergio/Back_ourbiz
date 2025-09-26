@@ -150,7 +150,7 @@ def obter_usuario(request, usuario_id: int):
 @usuario_router.post("/", response={200: dict, 400: dict})
 def criar_usuario(request, data: UsuarioCreateSchema):
     """Cria um usuário base (sem empresa/endereços ainda)."""
-
+    password = data.senha
     usuario = Usuario.objects.filter(email=data.email).first()
     if usuario:
         return 400, {"error": "Já existe um usuário com este e-mail"}
@@ -160,7 +160,7 @@ def criar_usuario(request, data: UsuarioCreateSchema):
         email=data.email,
         telefone=data.telefone,
     )
-    usuario.set_password(data.password)   # ✅ agora usa set_password
+    usuario.set_password(password)   # ✅ agora usa set_password
 
     # Definir role inicial
     if data.tipo_usuario == "cliente":
