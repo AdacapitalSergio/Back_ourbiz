@@ -196,11 +196,8 @@ def criar_usuario(request, data: UsuarioCreateSchema):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "usuario": {
-            **UsuarioSchema.model_validate(usuario).model_dump()
-        },
-    
-}
+        "usuario": UsuarioSchema.model_validate(usuario).model_dump()
+    }
 
 
 # -------------------------
