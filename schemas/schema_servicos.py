@@ -3,6 +3,7 @@ from typing import List, Optional
 from pydantic import Field, ConfigDict
 
 
+
 # ---------- BENEFÍCIOS ----------
 class BeneficioCreateSchema(Schema):
     titulo: str
