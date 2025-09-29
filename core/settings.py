@@ -65,6 +65,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
     'corsheaders',
+    'jazzmin',
+    #'django_nvd3',
+    #'django_admin_charts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -220,3 +223,40 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SECRET_KEY = "sua_chave_screta"  # Substitua por uma chave forte
 ALGORITHM = "HS256"
 TOKEN_EXPIRATION_MINUTES = 60
+
+
+# settings.py
+
+JAZZMIN_SETTINGS = {
+    "site_title": "OurBiz - Administração",
+    "site_header": "OurBiz Admin",
+    "site_brand": "OurBiz",
+    "welcome_sign": "👋 Bem-vindo! Aqui podes gerir usuários, empresas e solicitações. Dica: usa o menu lateral para navegar.",
+    "site_logo": "admin/img/lateral branca 2.png",   # caminho relativo dentro de STATICFILES
+    "site_icon": "admin/img/favicon.ico",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+        # ... outras configurações ...
+    "theme": "flatly",  # ou outro tema base
+    "custom_theme": {
+        "sidebar-bg": "#ad7f00",         # fundo da sidebar
+        "sidebar-hover-bg": "#060707",   # fundo quando passar o mouse
+        "sidebar-active-bg": "#0C0C0C",  # fundo do menu ativo
+        "sidebar-color": "#080808",      # cor do texto do menu
+        "sidebar-brand-color": "#ffffff",# cor do texto do branding/logo na sidebar
+    },
+    "topmenu_links": [
+        {"name": "Website", "url": "/ourbiz.ao", "new_window": True},
+        {"name": "Documentação", "url": "https://docs.djangoproject.com/", "new_window": True},
+    ],
+    "icons": {
+        "auth": "fas fa-users",
+        "usuario": "fas fa-user",
+        "empresa": "fas fa-building",
+        "servico": "fas fa-concierge-bell",
+    },
+    "order_with_respect_to": ["auth", "usuario", "empresa", "servico"],
+    # inclui CSS/JS custom (arquivos em STATICFILES)
+    "custom_css": "admin/css/custom_admin.css",
+    "custom_js": "admin/js/custom_admin.js",
+}
