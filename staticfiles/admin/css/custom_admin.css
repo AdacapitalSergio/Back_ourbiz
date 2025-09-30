@@ -108,6 +108,11 @@ a.brand-link { font-weight: 700; font-size: 1.05rem; }
     color: #4F0432 !important;
     border-radius: 8px;
 }
+/*Removendo marca d'água */
+.main-footer .float-right {
+    display: none !important;
+}
+
 
 /* Cor dos ícones do menu */
 .sidebar .nav-link i {

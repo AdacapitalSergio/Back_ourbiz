@@ -236,6 +236,7 @@ JAZZMIN_SETTINGS = {
     "site_icon": "admin/img/favicon.ico",
     "show_sidebar": True,
     "navigation_expanded": True,
+    "copyright": "OurBiz",   # ou deixa "" para não aparecer nada
         # ... outras configurações ...
     "theme": "flatly",  # ou outro tema base
     "custom_theme": {
