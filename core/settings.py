@@ -247,8 +247,7 @@ JAZZMIN_SETTINGS = {
         "sidebar-brand-color": "#ffffff",# cor do texto do branding/logo na sidebar
     },
     "topmenu_links": [
-        {"name": "Website", "url": "https://ourbiz.ao/", "new_window": True},
-        {"name": "Documentação", "url": "https://docs.djangoproject.com/", "new_window": True},
+        {"name": "ourbiz", "url": "https://ourbiz.ao/", "new_window": True},
     ],
     "icons": {
         "auth": "fas fa-users",

@@ -69,6 +69,11 @@ a.brand-link { font-weight: 700; font-size: 1.05rem; }
     margin-right: 10PX;
 }
 
+.btn-success:hover {
+    background-color: #9c6386 !important;  /* cor vinho */
+    border-color: #8b406e !important;
+    color: #ffffff !important;             /* texto branco */
+}
 
 /* Botão Modificar */
 .btn-info {
