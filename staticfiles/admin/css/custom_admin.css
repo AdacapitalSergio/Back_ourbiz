@@ -28,6 +28,7 @@ a.brand-link { font-weight: 700; font-size: 1.05rem; }
 .brand-link {
     background-color: #8B0857 !important;
     color: #4F0432 !important;
+    height: 56px !important;
 }
 
 
@@ -115,7 +116,7 @@ a.brand-link { font-weight: 700; font-size: 1.05rem; }
 
 /* Cor da linha horizontal abaixo do perfil */
 .sidebar .user-panel {
-    border-bottom: 2px solid #7a0044 !important; /* muda a cor da linha */
+    border-bottom: 1px solid #7a0044 !important; /* muda a cor da linha */
     padding-bottom: 10px;
     margin-bottom: 10px;
 }
@@ -123,7 +124,69 @@ a.brand-link { font-weight: 700; font-size: 1.05rem; }
 
 /* Se quiseres deixar igual à imagem: várias divisórias */
 .sidebar .nav-header {
-    border-top: 2px solid #7a0044 !important; 
+    border-top: 1px solid #7a0044 !important; 
     padding-top: 6px;
     margin-top: 6px;
+}
+
+
+/* Nome do usuário (texto no canto superior direito) */
+.navbar-nav .user-menu > a {
+    color: #ad7f00 !important;   /* dourado */
+    font-weight: bold;           /* opcional */
+}
+
+/* Nome do usuário ao passar o mouse */
+.navbar-nav .user-menu > a:hover {
+    color: #7a0044 !important;   /* vinho */
+}
+
+/* Nome do utilizador na sidebar */
+.user-panel .info a {
+    color: #fff !important;   /* dourado */
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.content-wrapper {
+    height: calc(100vh - 60px); /* altura total menos o header */
+    overflow-y: auto;           /* rolagem vertical */
+    padding: 15px;
+}
+
+
+/* --- Forçar quebra / wrap dos grupos de botões dentro dos cards --- */
+/* Mobile: botões em coluna, largura total */
+@media (max-width: 420px) {
+  .card .d-flex,
+  .card .btn-group,
+  .card .card-body .d-flex {
+    flex-direction: column !important;  /* força coluna */
+    align-items: stretch !important;    /* estica para largura total */
+    gap: 0.5rem !important;             /* espaçamento vertical */
+  }
+
+  .card .btn,
+  .card .btn-group .btn {
+    width: 100% !important;             /* ocupa largura total */
+    text-align: center !important;      /* centraliza o texto */
+    margin: 0 !important;
+  }
+  .card .btn {
+    font-size: 0.82rem !important;
+    padding: 0.3rem 0.5rem !important;
+  }
+  /* Cabeçalho principal (barra superior) */
+    .main-header,
+    .content-header {
+        background-color: #8B0857 !important; /* mesma cor da sidebar */
+        color: #ffffff !important;            /* texto branco para contraste */
+    }
+
+    /* Links e breadcrumb dentro do header */
+    .main-header a,
+    .content-header a {
+        color: #ffffff !important;
+    }
+
 }
