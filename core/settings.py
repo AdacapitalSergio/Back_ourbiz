@@ -232,7 +232,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "OurBiz - Administração",
     "site_header": "OurBiz Admin",
     "site_brand": "OurBiz",
-    "welcome_sign": "👋 Bem-vindo! Aqui podes gerir usuários, empresas e solicitações. Dica: usa o menu lateral para navegar.",
+    "welcome_sign": "Bem-vindo ao Painel Administrativo. Utilize o menu lateral para navegar no sistema.",
     "site_logo": "admin/img/lateral branca 2.png",   # caminho relativo dentro de STATICFILES
     "site_icon": "admin/img/favicon.ico",
     "show_sidebar": True,
