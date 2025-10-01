@@ -146,7 +146,7 @@ def send_website_request_email(
     tem_logotipo, sobre_empresa, integracoes, site_referencia, metodo_contato, commentarios,
 ):
     # Caminho do logotipo
-    logo_path = os.path.join(settings.BASE_DIR, "staticfiles", "img", "IMG_20250403_111108_173.jpg")
+    logo_path = os.path.join(settings.BASE_DIR, "staticfiles", "admin/img/", "lateral branca 2.png")
 
     # Corpo do e-mail para a equipe
     email_subject = "🌐 Nova Solicitação de Website"
@@ -178,8 +178,8 @@ def send_website_request_email(
     msg = EmailMultiAlternatives(
         subject=email_subject,
         body="",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[settings.DEFAULT_FROM_EMAIL],
+        from_email=email_requerente,
+        to=["comercial@ourbiz.ao"],
     )
     msg.attach_alternative(email_body, "text/html")
 
@@ -188,7 +188,7 @@ def send_website_request_email(
         with open(logo_path, "rb") as f:
             img = MIMEImage(f.read())
             img.add_header("Content-ID", "<logo_id>")
-            img.add_header("Content-Disposition", "inline", filename="IMG_20250403_111108_173.jpg")
+            img.add_header("Content-Disposition", "inline", filename="lateral branca 2.png")
             msg.attach(img)
 
     msg.send()
@@ -222,7 +222,7 @@ def send_website_request_email(
             with open(logo_path, "rb") as f:
                 img = MIMEImage(f.read())
                 img.add_header("Content-ID", "<logo_id>")
-                img.add_header("Content-Disposition", "inline", filename="IMG_20250403_111108_173.jpg")
+                img.add_header("Content-Disposition", "inline", filename="admin/img/lateral branca 2.png")
                 confirm_msg.attach(img)
 
         confirm_msg.send()
@@ -233,7 +233,7 @@ def send_conversation_for_operation_email(
     contacto_requerente, sms_requerente,
 ):
     # Caminho do logotipo
-    logo_path = os.path.join(settings.BASE_DIR, "staticfiles", "img", "IMG_20250403_111108_173.jpg")
+    logo_path = os.path.join(settings.BASE_DIR, "staticfiles", "admin/img/", "lateral branca 2.png")
 
     # Corpo do e-mail para a equipe
     email_subject = "🌐 "
@@ -265,7 +265,7 @@ def send_conversation_for_operation_email(
         with open(logo_path, "rb") as f:
             img = MIMEImage(f.read())
             img.add_header("Content-ID", "<logo_id>")
-            img.add_header("Content-Disposition", "inline", filename="IMG_20250403_111108_173.jpg")
+            img.add_header("Content-Disposition", "inline", filename="lateral branca 2.png")
             msg.attach(img)
 
     msg.send()

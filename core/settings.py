@@ -177,11 +177,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"  # Servidor SMTP do Gmail
-EMAIL_PORT = 587  # Porta SMTP padrão para TLS
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "adelinoemilianoa@gmail.com"  # Substitua pelo seu e-mail
-EMAIL_HOST_PASSWORD = "sbfl ucob pajy tklq"  # Substitua pela senha ou use "App Password"
+EMAIL_HOST = "mail.ourbiz.ao"  # Servidor SMTP do seu e-mail empresarial
+EMAIL_PORT = 587  # Use 465 para SSL ou 587 para TLS
+EMAIL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
+EMAIL_USE_SSL = False  # Se usar SSL (porta 465), defina como True
+EMAIL_HOST_USER = "noreply@ourbiz.ao"  # Seu e-mail empresarial
+EMAIL_HOST_PASSWORD = "#M936059607D*"  # Substitua pela senha correta
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Configuração do Redis como backend do Celery
