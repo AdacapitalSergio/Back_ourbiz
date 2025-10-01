@@ -208,4 +208,26 @@ a.brand-link { font-weight: 700; font-size: 1.05rem; }
         color: #ffffff !important;
     }
 
+
+    .login-box {
+    background-color: #7a0044;
+        border-radius: 10px;
+        width: 99%!important;
+    }
+
+    .login-box .card{
+        background-color: #D9C3D0!important; 
+        border-radius: 10px;
+    }
+    .login-box .login-logo h1 picture img {
+        height: 70px;
+        width: 100px;
+        background-color: #7a0044;
+    }
+
+    .login-box .card .card-body form .row .col-12 .btn{
+        background-color: #7a0044;
+    }
+
+
 }
