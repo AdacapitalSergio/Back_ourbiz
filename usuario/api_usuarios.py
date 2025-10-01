@@ -177,7 +177,7 @@ def criar_usuario(request, data: UsuarioCreateSchema):
         usuario=usuario,
         token=uuid.uuid4()
     )
-    verification_link = f"https://api.v1.ourbiz:8000/api/usuario/verify-email/{verification.token}/"
+    verification_link = f"https://api.v1.ourbiz/api/usuario/verify-email/{verification.token}/"
     send_verification_email.delay(
         usuario.nome_completo,
         verification_link,
