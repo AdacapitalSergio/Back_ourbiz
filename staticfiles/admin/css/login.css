@@ -1,0 +1,87 @@
+/* Container principal */
+.login-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Parte esquerda */
+.login-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: #fff;
+}
+
+.login-left h2 {
+    margin-bottom: 20px;
+    color: #5a0033; /* Bordô */
+}
+
+/* Inputs */
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+/* Botão */
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    background: #800040; /* cor vinho OurBiz */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+
+.btn-login:hover {
+    background: #a00055;
+}
+
+/* Link */
+.register-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: #800040;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* Parte direita */
+.login-right {
+    flex: 1;
+    background: url("/staticfiles/admin/img/lateral branca 2.png") no-repeat center center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-right {
+    background: #800040; /* cor vinho OurBiz */
+    }
+    
+.login-right .logo {
+    max-width: 250px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+    .login-right {
+        display: none;
+    }
+}

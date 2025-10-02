@@ -100,7 +100,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -145,6 +145,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+# para onde o usuário será redirecionado depois do login
+LOGIN_REDIRECT_URL = "/admin/"
 
 
 # Internationalization
@@ -260,4 +262,7 @@ JAZZMIN_SETTINGS = {
     # inclui CSS/JS custom (arquivos em STATICFILES)
     "custom_css": "admin/css/custom_admin.css",
     "custom_js": "admin/js/custom_admin.js",
+
+    #"show_ui_builder": False,
+    #"login_view": "django.contrib.auth.views.LoginView", 
 }
