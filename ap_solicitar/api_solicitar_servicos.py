@@ -164,7 +164,7 @@ def atualizar_solicitacao(request, solicitacao_id: int, payload: SchemaSolicitac
     for attr, value in payload.dict().items():
         setattr(solicitacao, attr, value)
 
-    solicitacao.data_final = solicitacao.data_inicial + relativedelta(months=payload.duracao_meses)
+    solicitacao.data_final = solicitacao.data_inicio + relativedelta(months=payload.duracao_meses)
     solicitacao.save()
     return solicitacao
 
