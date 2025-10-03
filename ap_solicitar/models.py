@@ -76,7 +76,7 @@ class SolicitacaoServico(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     funcionario = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
     servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
-    plano = models.ForeignKey(Plano, on_delete=models.CASCADE)
+    plano = models.ForeignKey(Plano, on_delete=models.SET_NULL, null=True, blank=True)
 
     tipo_servico = models.CharField(max_length=50, choices=[
         ("corrente", "Corrente"),

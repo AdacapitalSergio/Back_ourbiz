@@ -58,10 +58,11 @@ class RequisitarConversationSchema(Schema):
         arbitrary_types_allowed = True
 
 
-class SolicitacaoServicoCreate(Schema):
+class SchemaSolicitacaoServicoCreate(Schema):
     cliente_id: int
     funcionario_id: Optional[int] = None
     servico_id: int
+    plano_id: Optional[int] = None
     tipo_servico: str = "corrente"
     valor: float
     status: str = "pendente"
@@ -70,7 +71,7 @@ class SolicitacaoServicoCreate(Schema):
     factura: Optional[str] = None
     tem_factura: bool = False
 
-class SolicitacaoServico(Schema):
+class SchemaSolicitacaoServico(Schema):
     id: int
     cliente_id: int
     funcionario_id: Optional[int]
@@ -79,7 +80,7 @@ class SolicitacaoServico(Schema):
     valor: float
     status: str
     duracao_meses: int
-    data_inicial: date
+    data_inicio: date
     data_final: date
     descricao: Optional[str] = None
     factura: Optional[str] = None

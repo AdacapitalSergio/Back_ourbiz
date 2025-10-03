@@ -12,8 +12,8 @@ from utils.gemini import gerar_conteudo_secoes, gerar_plano_de_negocio_word
 
 from datetime import timedelta
 from .models import SolicitacaoServico, Cliente,  Funcionario
-from servico.models import Servico
-from schemas.schemas_servico import SolicitacaoServico, SolicitacaoServicoCreate
+from servico.models import Plano, Servico
+from schemas.schemas_servico import SchemaSolicitacaoServico, SchemaSolicitacaoServicoCreate
 from datetime import date
 from dateutil.relativedelta import relativedelta 
 
@@ -108,27 +108,34 @@ def gerar_plano(request, data: PlanoNegocioInput):
     }
 
 
-@solicitar_router.post("/solicitacoes/", response=SolicitacaoServico)
-def criar_solicitacao(request, payload: SolicitacaoServicoCreate):
+@solicitar_router.post("/solicitacoes/", response=SchemaSolicitacaoServico)
+def criar_solicitacao(request, payload: SchemaSolicitacaoServicoCreate):
     cliente = get_object_or_404(Cliente, id=payload.cliente_id)
     servico = get_object_or_404(Servico, id=payload.servico_id)
     #print(cliente)
     print(servico)
     funcionario = None
+    plano = None
     if payload.funcionario_id:
         funcionario = get_object_or_404(Funcionario, id=payload.funcionario_id)
+        print(funcionario)
 
-    data_inicial = date.today()
-    data_final = data_inicial + relativedelta(months=payload.duracao_meses)
+    if payload.plano_id:
+        plano = get_object_or_404(Plano, id=payload.plano_id)
+        #print(plano)    
+
+    data_inicio = date.today()
+    data_final = data_inicio + relativedelta(months=payload.duracao_meses)
     solicitacao = SolicitacaoServico.objects.create(
         cliente=cliente,
         funcionario=funcionario,
         servico=servico,
+        plano=plano,
         tipo_servico=payload.tipo_servico,
         valor=payload.valor,
         status=payload.status,
         duracao_meses=payload.duracao_meses,
-        data_inicial=data_inicial,
+        data_inicio = data_inicio,
         data_final=data_final,
         descricao=payload.descricao,
         #factura=payload.factura,
@@ -138,20 +145,20 @@ def criar_solicitacao(request, payload: SolicitacaoServicoCreate):
 
 
 # Listar todas solicitações
-@solicitar_router.get("/solicitacoes/", response=list[SolicitacaoServico])
+@solicitar_router.get("/solicitacoes/", response=list[SchemaSolicitacaoServico])
 def listar_solicitacoes(request):
     return SolicitacaoServico.objects.all()
 
 
 # Obter uma solicitação específica
-@solicitar_router.get("/solicitacoes/{solicitacao_id}", response=SolicitacaoServico)
+@solicitar_router.get("/solicitacoes/{solicitacao_id}", response=SchemaSolicitacaoServico)
 def obter_solicitacao(request, solicitacao_id: int):
     return get_object_or_404(SolicitacaoServico, id=solicitacao_id)
 
 
 # Atualizar status ou outros campos
-@solicitar_router.put("/solicitacoes/{solicitacao_id}", response=SolicitacaoServico)
-def atualizar_solicitacao(request, solicitacao_id: int, payload: SolicitacaoServicoCreate):
+@solicitar_router.put("/solicitacoes/{solicitacao_id}", response=SchemaSolicitacaoServico)
+def atualizar_solicitacao(request, solicitacao_id: int, payload: SchemaSolicitacaoServicoCreate):
     solicitacao = get_object_or_404(SolicitacaoServico, id=solicitacao_id)
 
     for attr, value in payload.dict().items():
@@ -162,7 +169,7 @@ def atualizar_solicitacao(request, solicitacao_id: int, payload: SolicitacaoServ
     return solicitacao
 
 # Actualizar status d  uma solicitação
-@solicitar_router.put("/alterarStatus/{solicitacao_id}/{funcionario_id}", response=SolicitacaoServico)
+@solicitar_router.put("/alterarStatus/{solicitacao_id}/{funcionario_id}", response=SchemaSolicitacaoServico)
 def atualizar_status_solicitacao(request, solicitacao_id: int, funcionario_id: int, status: str):
     solicitacao = get_object_or_404(SolicitacaoServico, id=solicitacao_id)
     funcionario = get_object_or_404(Funcionario, id=funcionario_id)
