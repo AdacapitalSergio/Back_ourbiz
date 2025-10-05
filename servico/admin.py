@@ -4,13 +4,13 @@ from .models import Servico, Plano, Beneficio
 
 @admin.register(Servico)
 class ServicoAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome", "preco")  # colunas que aparecem na listagem
+    list_display = ("id", "nome", "descricao", "preco")  # colunas que aparecem na listagem
     search_fields = ("nome", "descricao")   # campo de busca no admin
     list_filter = ("preco",)                # filtros laterais
 
 @admin.register(Plano)
 class PlanoAdmin(admin.ModelAdmin):
-    list_display = ("id", "titulo", "preco_mensal", "servicos")
+    list_display = ("id", "titulo", "descricao", "preco_mensal", "servicos")
     search_fields = ("titulo", "descricao")
 
 @admin.register(Beneficio)

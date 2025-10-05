@@ -97,7 +97,7 @@ class SolicitacaoServico(models.Model):
     duracao_meses = models.PositiveIntegerField(default=1)
     data_final = models.DateField(blank=True, null=True)
     data_pagamento = models.DateField(blank=True, null=True)
-    factura_servico = models.FileField(upload_to="temporarias/")
+    factura_servico = models.FileField(upload_to="temporarias/", null=True, blank=True)
     tem_factura = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):

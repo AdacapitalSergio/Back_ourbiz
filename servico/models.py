@@ -17,7 +17,7 @@ class Plano(models.Model):
     servicos = models.ForeignKey(Servico, on_delete=models.CASCADE, related_name="planos")
 
     def __str__(self):
-        return self.titulo
+        return f"{self.titulo} ( servico: {self.servicos.nome} )"
 
 
 class Beneficio(models.Model):

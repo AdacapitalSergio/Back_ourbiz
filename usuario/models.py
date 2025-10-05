@@ -47,9 +47,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     objects = UsuarioManager()
     
-    
     def __str__(self):
-        return self.nome_completo
+        return f"{self.nome_completo}"
 
     def set_senha(self, raw_password):
         self.senha = make_password(raw_password)
@@ -99,7 +98,7 @@ class Empresa(models.Model):
     )
 
     def __str__(self):
-        return f"{self.nome_empresa} (NIF: {self.nif})"
+        return f"{self.nome_empresa}( NIF: {self.nif} | Email: {self.email})"
     
 class Endereco(models.Model):
     

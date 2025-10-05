@@ -1,4 +1,7 @@
 from django.contrib import admin
+
+from funcionario.models import Funcionario
+from utils.notificacoes import enviar_notificacao
 from .models import  Objetivo, WebsiteRequest, SolicitacaoServico
 
 """@admin.register(Servico)
@@ -26,12 +29,19 @@ class SolicitacaoServicoAdmin(admin.ModelAdmin):
     actions = ["aprovar_solicitacao"]
 
     def aprovar_solicitacao(self, request, queryset):
+        #funcionario = None
+        funcionario = request.user.funcionario 
+     
         for solicitacao in queryset:
             if solicitacao.tem_factura and solicitacao.factura_servico:
                 solicitacao.status = "aprovado"
-                solicitacao.funcionario = request.user.funcionario  # funcionário logado
+                solicitacao.funcionario = funcionario  # funcionário logado
                 solicitacao.save()
+            mensagem = "Solicitacao aprovada com sucesso!"            
+            enviar_notificacao(solicitacao.cliente.id, "Estado da solicitacao", mensagem)      
+                
+  
         self.message_user(request, "Solicitações aprovadas com sucesso.")
-
+        
     aprovar_solicitacao.short_description = "Aprovar solicitações com fatura validada"
 
