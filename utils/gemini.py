@@ -1,4 +1,4 @@
-import google.generativeai as genai
+#import google.generativeai as genai
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, Inches
@@ -7,21 +7,17 @@ from docx.oxml import OxmlElement
 import re
 import os
 from typing import Dict, Any
-
-# Configurar API
-genai.configure(api_key="AIzaSyBCtgsPp0KU848QKGEhd5KCGgfn9gYVbUo")
-modelo = genai.GenerativeModel("gemini-1.5-flash")
-
-import re
-from typing import Any
 import google.generativeai as genai
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+
+
+# Configura a API Key (nunca exponha publicamente)
+genai.configure(api_key="AIzaSyCYfHeJAJqyi2qrBpygTQn0XxTfg4K83po")
+
 
 # ---------- Configuração do Gemini ----------
-genai.configure(api_key="AIzaSyBCtgsPp0KU848QKGEhd5KCGgfn9gYVbUo")
-modelo = genai.GenerativeModel("gemini-1.5-flash")
+#genai.configure(api_key="AIzaSyBCtgsPp0KU848QKGEhd5KCGgfn9gYVbUo")
+
+modelo = genai.GenerativeModel("gemini-2.5-flash")
 
 
 # ---------- Helpers ----------
@@ -110,7 +106,9 @@ def gerar_conteudo_secoes(dados: str) -> dict[str, Any]:
     resultados: dict[str, Any] = {}
 
     for chave, prompt in secoes.items():
-        resposta = modelo.generate_content(f"{prompt}\n\nDados da empresa:\n{dados}")
+        resposta = modelo.generate_content(
+            f"{prompt}\n\nDados da empresa:\n{dados}"
+        )
         resultados[chave] = limpar_texto(resposta.text)
 
     return resultados

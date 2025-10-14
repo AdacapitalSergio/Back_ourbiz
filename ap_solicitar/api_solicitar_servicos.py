@@ -92,7 +92,7 @@ def solicitar_conversation_for_operation(request, data: RequisitarConversationSc
 @solicitar_router.post("/gerar_plano_negocio", response=dict)
 def gerar_plano(request, data: PlanoNegocioInput):
     dados_empresa = f"Tipo de negócio: {data.tipo_de_negocio}, Localização: {data.localizacao}"
-    gerar_plano_de_negocio_word(tipo_negocio=data.tipo_de_negocio, localizacao=data.localizacao, imagem_capa="capa.jpg")
+    #gerar_plano_de_negocio_word(tipo_negocio=data.tipo_de_negocio, localizacao=data.localizacao, imagem_capa="capa.jpg")
     secoes = gerar_conteudo_secoes(dados_empresa)
     
    

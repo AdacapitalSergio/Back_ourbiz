@@ -29,13 +29,12 @@ class SolicitacaoServicoAdmin(admin.ModelAdmin):
     actions = ["aprovar_solicitacao"]
 
     def aprovar_solicitacao(self, request, queryset):
-        #funcionario = None
         funcionario = request.user.funcionario 
      
         for solicitacao in queryset:
             if solicitacao.tem_factura and solicitacao.factura_servico:
                 solicitacao.status = "aprovado"
-                solicitacao.funcionario = funcionario  # funcionário logado
+                solicitacao.funcionario = funcionario  
                 solicitacao.save()
             mensagem = "Solicitacao aprovada com sucesso!"            
             enviar_notificacao(solicitacao.cliente.id, "Estado da solicitacao", mensagem)      
