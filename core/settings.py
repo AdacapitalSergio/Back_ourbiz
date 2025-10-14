@@ -33,7 +33,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://localhost",
     "http://localhost:5173"
 ]
-CORS_ALLOW_ALL_ORIGINS = True  # ⚠️ Apenas em ambiente local!
+#CORS_ALLOW_ALL_ORIGINS = True  # ⚠️ Apenas em ambiente local!
 
 # Domínios confiáveis para CSRF
 CSRF_TRUSTED_ORIGINS = [
