@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
 
+from django.shortcuts import render
+
 from schemas.schema_plano_negocio import PlanoNegocioInput, PlanoNegocioResponse
 
 
@@ -94,8 +96,8 @@ def gerar_plano(request, data: PlanoNegocioInput):
     dados_empresa = f"Tipo de negócio: {data.tipo_de_negocio}, Localização: {data.localizacao}"
     #gerar_plano_de_negocio_word(tipo_negocio=data.tipo_de_negocio, localizacao=data.localizacao, imagem_capa="capa.jpg")
     secoes = gerar_conteudo_secoes(dados_empresa)
-    
-   
+
+
     return {
         "SUMARIO_EXECUTIVO": secoes["SUMARIO_EXECUTIVO"],
         "A_EMPRESA": secoes["A_EMPRESA"],
@@ -187,3 +189,5 @@ def deletar_solicitacao(request, solicitacao_id: int):
     solicitacao.delete()
     return {"success": True, "message": "Solicitação removida com sucesso"}
 
+def gerar_plano_view(request):
+    return render(request, 't.html')

@@ -5,7 +5,7 @@ from django.urls import include, path
 from ninja import NinjaAPI
 
 
-from ap_solicitar.api_solicitar_servicos import solicitar_router, contacto_router   
+from ap_solicitar.api_solicitar_servicos import gerar_plano_view, solicitar_router, contacto_router   
 from usuario.api_usuarios import auth_router, usuario_router, empresa_router, endereco_router, empresa_router
 from funcionario.api_funcionario import funcionario_router
 from servico.api_servico import router_servicos
@@ -14,7 +14,7 @@ from cliente.api_cliente import cliente_router
 
 api = NinjaAPI()
 
-api.add_router("/auth/", auth_router)
+#api.add_router("/auth/", auth_router)
 api.add_router("/usuario/", usuario_router)
 
 api.add_router("/cliente/", cliente_router)
@@ -38,7 +38,8 @@ admin.site.index_title = "Bem-vindo! Aqui você pode gerir serviços, funcionár
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', api.urls)
+    path('api/', api.urls),
+    path('gerar_plano/', gerar_plano_view, name='gerar_plano'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

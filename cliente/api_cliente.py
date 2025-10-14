@@ -80,4 +80,3 @@ def listar_cliente(request):
     cliente = Cliente.objects.all()
 
     return cliente
-
