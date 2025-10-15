@@ -58,6 +58,26 @@ CSRF_USE_SESSIONS = True  # Alternativa para evitar falhas no CSRF
 CSRF_COOKIE_HTTPONLY = True  # Impede que JavaScript acesse o cookie CSRF
 CSRF_COOKIE_SAMESITE = 'Lax'  # Permite CSRF apenas para o mesmo site
 
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
@@ -268,23 +288,3 @@ JAZZMIN_SETTINGS = {
     #"login_view": "django.contrib.auth.views.LoginView", 
 }
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
