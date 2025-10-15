@@ -39,7 +39,6 @@ admin.site.index_title = "Bem-vindo! Aqui você pode gerir serviços, funcionár
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', api.urls),
-    path('gerar_plano/', gerar_plano_view, name='gerar_plano'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

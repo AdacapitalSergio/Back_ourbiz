@@ -189,5 +189,6 @@ def deletar_solicitacao(request, solicitacao_id: int):
     solicitacao.delete()
     return {"success": True, "message": "Solicitação removida com sucesso"}
 
+@solicitar_router.get("/gerar_plano/")
 def gerar_plano_view(request):
     return render(request, 't.html')
