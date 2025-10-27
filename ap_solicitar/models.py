@@ -41,48 +41,12 @@ class WebsiteRequest(models.Model):
 
     def __str__(self):
         return f"Solicitação de {self.nome_requerente} ({self.email_requerente})"
-    
-
-
-"""
-class Servico(models.Model):
-    nome = models.CharField(max_length=150)
-    descricao = models.TextField()
-    tipo = models.CharField(max_length=50, choices=[
-        ("consultoria_pequenas_empresas", "Consultoria para Pequenas Empresas"),
-        ("consultoria_startups", "Consultoria para Startups"),
-        ("outros", "Outros")
-    ])
-    preco_base = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return self.nome
-
-class Servico(models.Model):
-    nome = models.CharField(max_length=150)
-    descricao = models.TextField()
-    tipo = models.CharField(max_length=50, choices=[
-        ("consultoria_pequenas_empresas", "Consultoria para Pequenas Empresas"),
-        ("consultoria_startups", "Consultoria para Startups"),
-        ("outros", "Outros")
-    ])
-    preco_base = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return self.nome
-"""
 
 class SolicitacaoServico(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     funcionario = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
-    servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
+    #servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
     plano = models.ForeignKey(Plano, on_delete=models.SET_NULL, null=True, blank=True)
-
-    tipo_servico = models.CharField(max_length=50, choices=[
-        ("corrente", "Corrente"),
-        ("avulso", "Avulso")
-    ], default="corrente")
-
     valor = models.DecimalField(max_digits=10, decimal_places=3)
     status = models.CharField(max_length=30, choices=[
         ("pendente", "Pendente"),
@@ -92,13 +56,11 @@ class SolicitacaoServico(models.Model):
         ("cancelado", "Cancelado")
     ], default="pendente")
 
-    descricao = models.TextField(blank=True, null=True)
     data_inicio = models.DateField(default=date.today)
     duracao_meses = models.PositiveIntegerField(default=1)
     data_final = models.DateField(blank=True, null=True)
     data_pagamento = models.DateField(blank=True, null=True)
     factura_servico = models.FileField(upload_to="temporarias/", null=True, blank=True)
-    tem_factura = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.data_inicio and self.duracao_meses:
@@ -107,4 +69,4 @@ class SolicitacaoServico(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.servico.nome} - {self.cliente.usuario.nome_completo} ({self.status})"
+        return f"{self.plano.titulo} - {self.cliente.usuario.nome_completo} ({self.status})"

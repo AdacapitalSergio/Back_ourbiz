@@ -20,8 +20,8 @@ class WebsiteRequestAdmin(admin.ModelAdmin):
 
 @admin.register(SolicitacaoServico)
 class SolicitacaoServicoAdmin(admin.ModelAdmin):
-    list_display = ("cliente", "servico", "funcionario", "status", "tem_factura", "factura_servico", "data_inicio", "data_final")
-    list_filter = ("status", "tem_factura", "data_inicio")
+    list_display = ("cliente", "funcionario", "status", "factura_servico", "data_inicio", "data_final")
+    list_filter = ("status", "data_inicio")
     search_fields = ("cliente__usuario__nome_completo", "servico__nome")
     readonly_fields = ("data_final", "data_pagamento")
 
@@ -32,7 +32,7 @@ class SolicitacaoServicoAdmin(admin.ModelAdmin):
         funcionario = request.user.funcionario 
      
         for solicitacao in queryset:
-            if solicitacao.tem_factura and solicitacao.factura_servico:
+            if solicitacao.factura_servico:
                 solicitacao.status = "aprovado"
                 solicitacao.funcionario = funcionario  
                 solicitacao.save()

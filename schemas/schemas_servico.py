@@ -63,27 +63,22 @@ class SchemaSolicitacaoServicoCreate(Schema):
     funcionario_id: Optional[int] = None
     servico_id: int
     plano_id: Optional[int] = None
-    tipo_servico: str = "corrente"
-    valor: float
     status: str = "pendente"
     duracao_meses: int
-    descricao: Optional[str] = None
     factura: Optional[str] = None
-    tem_factura: bool = False
-
+    
 class SchemaSolicitacaoServico(Schema):
     id: int
     cliente_id: int
     funcionario_id: Optional[int]
-    servico_id: int
-    tipo_servico: str
+    #servico_id: int
+    #tipo_servico: str
+    plano_id: Optional[int] 
     valor: float
     status: str
     duracao_meses: int
     data_inicio: date
     data_final: date
-    descricao: Optional[str] = None
-    factura: Optional[str] = None
-    tem_factura: bool = False
-
+    factura_servico: Optional[str] = None
+    
 #declaracao_certificado: str = Field(..., title="Declaração de Certificado", description="Declaração de certificado do candidato.")    
