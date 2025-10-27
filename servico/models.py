@@ -4,10 +4,10 @@ from django.db import models
 class Servico(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
-    """tipo_servico = models.CharField(max_length=50, choices=[
+    tipo_servico = models.CharField(max_length=50, choices=[
         ("corrente", "Corrente"),
         ("avulso", "Avulso")
-    ], default="corrente")"""
+    ], default="corrente")
     preco = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):

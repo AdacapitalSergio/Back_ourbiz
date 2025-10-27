@@ -1,8 +1,12 @@
+from email.policy import default
 from ninja import Schema
 from typing import List, Optional
 from pydantic import Field, ConfigDict
 
-
+tipo_servico: List[tuple[str, str]] = [
+        ("corrente", "Corrente"),
+        ("avulso", "Avulso")
+    ]
 
 # ---------- BENEFÍCIOS ----------
 class BeneficioCreateSchema(Schema):
@@ -40,6 +44,7 @@ class PlanoSchema(Schema):
 class ServicoCreateSchema(Schema):
     nome: str
     descricao: str
+    tipo_servico: str
     preco: float
 
 
@@ -47,7 +52,9 @@ class ServicoSchema(Schema):
     id: int
     nome: str
     descricao: str
+    tipo_servico: str
     preco: float
     planos: List[PlanoSchema] = Field(default_factory=list)
-    class Config:   
+
+    class Config:
         from_attributes = True

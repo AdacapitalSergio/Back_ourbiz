@@ -4,7 +4,7 @@ from .models import Servico, Plano, Beneficio
 
 @admin.register(Servico)
 class ServicoAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome", "descricao", "preco")  # colunas que aparecem na listagem
+    list_display = ("id", "nome", "descricao", "preco", "tipo_servico")  # colunas que aparecem na listagem
     search_fields = ("nome", "descricao")   # campo de busca no admin
     list_filter = ("preco",)                # filtros laterais
 
