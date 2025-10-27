@@ -2,12 +2,15 @@ import json
 from django.core.management.base import BaseCommand
 from servico.models import Servico, Plano, Beneficio  # substitui "app" pelo nome da tua app
 
+#  ("corrente", "Corrente"),
+ #       ("avulso", "Avulso")
 # JSON com os planos
 PLANOS_JSON = {
     "servicos": [
         {
             "nome": "Consultoria para MPMEs",
             "descricao": "Planos de consultoria empresarial adaptados para empreendedores, pequenas, médias empresas, startups e empresas consolidadas.",
+            "tipo_servico": "corrente",
             "preco": 0.0,
             "planos": [
                 {
@@ -61,6 +64,7 @@ PLANOS_JSON = {
         {
             "nome": "Apoio e Captação de Recursos",
             "descricao": "Planos de apoio estratégico para captação de recursos, preparação para investidores e crescimento sustentável.",
+            "tipo_servico": "corrente",
             "preco": 0.0,
             "planos": [
                 {
@@ -98,6 +102,7 @@ PLANOS_JSON = {
         {
             "nome": "Marketing e Divulgação",
             "descricao": "Planos para impulsionar a visibilidade da marca, atrair clientes e fortalecer a presença no mercado.",
+            "tipo_servico": "corrente",
             "preco": 0.0,
             "planos": [
                 {
