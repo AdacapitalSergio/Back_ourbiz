@@ -14,7 +14,7 @@ from cliente.api_cliente import cliente_router
 
 api = NinjaAPI()
 
-#api.add_router("/auth/", auth_router)
+api.add_router("/auth/", auth_router)
 api.add_router("/usuario/", usuario_router)
 
 api.add_router("/cliente/", cliente_router)

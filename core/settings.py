@@ -202,7 +202,7 @@ STATICFILES_DIRS = [
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "mail.ourbiz.ao"  # Servidor SMTP do seu e-mail empresarial
 EMAIL_PORT = 587  # Use 465 para SSL ou 587 para TLS
-EMAIL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
+EMAIAL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
 EMAIL_USE_SSL = False  # Se usar SSL (porta 465), defina como True
 EMAIL_HOST_USER = "noreply@ourbiz.ao"  # Seu e-mail empresarial
 EMAIL_HOST_PASSWORD = "#M936059607D*"  # Substitua pela senha correta
