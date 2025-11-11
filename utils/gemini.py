@@ -1,4 +1,5 @@
 #import google.generativeai as genai
+from celery import shared_task
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, Inches
@@ -46,6 +47,7 @@ def limpar_texto(texto: str) -> str:
 
 
 # ---------- Função principal ----------
+@shared_task
 def gerar_conteudo_secoes(dados: str) -> dict[str, Any]:
     """
     Gera automaticamente as seções completas do plano de negócio

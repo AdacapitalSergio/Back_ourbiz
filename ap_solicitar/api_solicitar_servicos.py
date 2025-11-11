@@ -11,6 +11,7 @@ from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServ
 from utils.solicitacao_website_email import send_conversation_for_operation_email, send_website_request_email
 from utils.gemini import gerar_conteudo_secoes, gerar_plano_de_negocio_word
 
+from celery.result import AsyncResult
 
 from datetime import timedelta
 from .models import SolicitacaoServico, Cliente,  Funcionario
@@ -89,26 +90,27 @@ def solicitar_conversation_for_operation(request, data: RequisitarConversationSc
     return 200, {"message": "Contacto enviado com sucesso."}
 
 
-
-
 @solicitar_router.post("/gerar_plano_negocio", response=dict)
 def gerar_plano(request, data: PlanoNegocioInput):
     dados_empresa = f"Tipo de negócio: {data.tipo_de_negocio}, Localização: {data.localizacao}"
-    #gerar_plano_de_negocio_word(tipo_negocio=data.tipo_de_negocio, localizacao=data.localizacao, imagem_capa="capa.jpg")
-    secoes = gerar_conteudo_secoes(dados_empresa)
+    task = gerar_conteudo_secoes.delay(dados_empresa)
+    return {"task_id": task.id, "status": "em processamento"}
 
+@solicitar_router.get("/gerar_plano_status/{task_id}", response=dict)
+def gerar_plano_status(request, task_id: str):
+    task_result = AsyncResult(task_id)
 
-    return {
-        "SUMARIO_EXECUTIVO": secoes["SUMARIO_EXECUTIVO"],
-        "A_EMPRESA": secoes["A_EMPRESA"],
-        "CARATERIZACAO_DO_PROJETO": secoes["CARATERIZACAO_DO_PROJETO"],
-        "O_PRODUTO_SERVICO": secoes["O_PRODUTO_SERVICO"],
-        "ANALISE_DE_MERCADO": secoes["ANALISE_DE_MERCADO"],
-        "PLANO_DE_MARKETING": secoes["PLANO_DE_MARKETING"],
-        "ESTRUTURA_ORGANIZACIONAL": secoes["ESTRUTURA_ORGANIZACIONAL"],
-        "PLANO_FINANCEIRO": secoes["PLANO_FINANCEIRO"]
-    }
-
+    if task_result.state == "PENDING":
+        return {"status": "em processamento"}
+    elif task_result.state == "SUCCESS":
+        return {
+            "status": "concluido",
+            "resultado": task_result.result
+        }
+    elif task_result.state == "FAILURE":
+        return {"status": "erro", "detalhes": str(task_result.info)}
+    else:
+        return {"status": task_result.state}
 
 @solicitar_router.post("/solicitacoes/", response=SchemaSolicitacaoServico)
 def criar_solicitacao(request, payload: SchemaSolicitacaoServicoCreate):

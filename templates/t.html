@@ -11,7 +11,6 @@
       margin: 0;
       padding: 0;
     }
-
     header {
       background-color: #0078d7;
       color: white;
@@ -20,7 +19,6 @@
       font-size: 1.5rem;
       font-weight: bold;
     }
-
     main {
       max-width: 900px;
       margin: 2rem auto;
@@ -29,26 +27,22 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
-
     label {
       font-weight: 600;
       color: #333;
     }
-
-    input, select {
+    input {
       width: 100%;
       padding: 0.6rem;
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 1rem;
     }
-
     button {
       grid-column: 1 / 3;
       background-color: #0078d7;
@@ -60,17 +54,12 @@
       cursor: pointer;
       transition: 0.3s;
     }
-
-    button:hover {
-      background-color: #005fa3;
-    }
-
+    button:hover { background-color: #005fa3; }
     #resultado {
       margin-top: 2rem;
       padding: 1rem;
       border-top: 2px solid #0078d7;
     }
-
     .secao {
       background: #f9fafc;
       border-left: 5px solid #0078d7;
@@ -78,12 +67,10 @@
       padding: 1rem;
       border-radius: 6px;
     }
-
     .secao h3 {
       color: #0078d7;
       margin-bottom: 0.5rem;
     }
-
     .loading {
       text-align: center;
       color: #0078d7;
@@ -109,7 +96,6 @@
     </form>
 
     <div id="loading" class="loading" style="display:none;">Gerando plano... ⏳</div>
-
     <div id="resultado"></div>
   </main>
 
@@ -129,43 +115,59 @@
     };
 
     try {
+      // 1️⃣ Envia a solicitação inicial e recebe o task_id
       const res = await fetch("https://api.v1.ourbiz.ao/api/solicitar/gerar_plano_negocio", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
-      console.log("Response status:", res.status);
-
-      // Tentar ler o corpo apenas uma vez
       const json = await res.json();
-      loading.style.display = "none";
 
       if (!res.ok) {
-        resultadoDiv.innerHTML = `<p style="color:red;">Erro ao gerar plano: ${json.detail || "Erro desconhecido"}</p>`;
+        loading.style.display = "none";
+        resultadoDiv.innerHTML = `<p style="color:red;">Erro: ${json.detail || "Falha ao iniciar geração do plano."}</p>`;
         return;
       }
 
-      console.log("Parsed JSON:", json);
+      const taskId = json.task_id;
+      console.log("🧠 Task ID:", taskId);
 
-      // Exibir cada seção formatada
-      resultadoDiv.innerHTML = Object.entries(json)
-        .map(([titulo, conteudo]) => `
-          <div class="secao">
-            <h3>${titulo.replaceAll("_", " ")}</h3>
-            <p>${conteudo}</p>
-          </div>
-        `)
-        .join('');
+      // 2️⃣ Consulta o status periodicamente
+      const interval = setInterval(async () => {
+        const statusRes = await fetch(`https://api.v1.ourbiz.ao/api/solicitar/gerar_plano_status/${taskId}`);
+        const statusJson = await statusRes.json();
+
+        console.log("Status:", statusJson.status);
+
+        if (statusJson.status === "concluido") {
+          clearInterval(interval);
+          loading.style.display = "none";
+
+          const resultado = statusJson.resultado;
+          resultadoDiv.innerHTML = Object.entries(resultado)
+            .map(([titulo, conteudo]) => `
+              <div class="secao">
+                <h3>${titulo.replaceAll("_", " ")}</h3>
+                <p>${conteudo}</p>
+              </div>
+            `)
+            .join('');
+
+          alert("✅ O plano de negócio foi gerado com sucesso!");
+        } else if (statusJson.status === "erro") {
+          clearInterval(interval);
+          loading.style.display = "none";
+          resultadoDiv.innerHTML = `<p style="color:red;">Erro ao gerar plano: ${statusJson.detalhes}</p>`;
+        }
+      }, 5000); // consulta a cada 5 segundos
 
     } catch (err) {
       loading.style.display = "none";
       resultadoDiv.innerHTML = `<p style="color:red;">Erro de conexão: ${err.message}</p>`;
     }
   });
-</script>
+  </script>
 
 </body>
 </html>
