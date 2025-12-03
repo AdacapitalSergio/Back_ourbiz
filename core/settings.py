@@ -102,6 +102,7 @@ INSTALLED_APPS = [
     'funcionario',
     'servico',
     'notificacoes',
+    'cordenadas_bancarias',
 ]
 
 MIDDLEWARE = [

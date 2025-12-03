@@ -11,6 +11,7 @@ from funcionario.api_funcionario import funcionario_router
 from servico.api_servico import router_servicos
 from notificacoes.api_notificacoes import notificacoes_router
 from cliente.api_cliente import cliente_router
+from cordenadas_bancarias.api_cordenadas_bancarias import cordenadas_bancarias_router
 
 api = NinjaAPI()
 
@@ -29,6 +30,7 @@ api.add_router("/contacto/", contacto_router)
 api.add_router("/servicos/", router_servicos)
 api.add_router("/notificacoes/", notificacoes_router)
 
+api.add_router("/cordenadas_bancarias/", cordenadas_bancarias_router)
 
 
 admin.site.site_header = "Painel Administrativo OurBiz"
