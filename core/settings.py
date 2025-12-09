@@ -202,12 +202,17 @@ STATICFILES_DIRS = [
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "mail.ourbiz.ao"  # Servidor SMTP do seu e-mail empresarial
+#EMAIL_HOST = "smtp.gmail.com"  # Servidor SMTP do Gmail
 EMAIL_PORT = 587  # Use 465 para SSL ou 587 para TLS
-EMAIAL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
+EMAIL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
 EMAIL_USE_SSL = False  # Se usar SSL (porta 465), defina como True
 EMAIL_HOST_USER = "noreply@ourbiz.ao"  # Seu e-mail empresarial
-EMAIL_HOST_PASSWORD = "#M936059607D*"  # Substitua pela senha correta
+EMAIL_HOST_PASSWORD = "#M!936059607!D*"  # Substitua pela senha correta
+
+#EMAIL_HOST_USER = "adelinoemilianoa@gmail.com"  # Substitua pelo seu e-mail
+#EMAIL_HOST_PASSWORD = "sbfl ucob pajy tklq"  # Substitua pela senha ou use "App Password"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Configuração do Redis como backend do Celery
 CELERY_BROKER_URL = "sqla+sqlite:///celerydb.sqlite3"
@@ -220,29 +225,6 @@ CELERY_TASK_SERIALIZER = "json"
 # Tentar reconectar ao iniciar
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
-"""# Configuração do Celery
-EMAIL_HOST = "mail.ourbiz.ao"  # Servidor SMTP do seu e-mail empresarial
-#EMAIL_HOST = "smtp.gmail.com"  # Servidor SMTP do Gmail
-EMAIL_PORT = 587  # Use 465 para SSL ou 587 para TLS
-EMAIL_USE_TLS = True  # Se usar a porta 465, mude para EMAIL_USE_SSL = True
-EMAIL_USE_SSL = False  # Se usar SSL (porta 465), defina como True
-EMAIL_HOST_USER = "comercial@ourbiz.ao"  # Seu e-mail empresarial
-EMAIL_HOST_PASSWORD = "#M936059607D*"  # Substitua pela senha correta#X
-
-
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_BROKER_CONNECTIONe_RETRY_ON_STARTUP = True
-
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"  # Servidor SMTP do Gmail
-EMAIL_PORT = 587  # Porta SMTP padrão para TLS
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "adelinoemilianoa@gmail.com"  # Substitua pelo seu e-mail
-EMAIL_HOST_PASSWORD = "sbfl ucob pajy tklq"  # Substitua pela senha ou use "App Password"
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-"""
 
 # Configurações do JWT
 SECRET_KEY = "sua_chave_screta"  # Substitua por uma chave forte

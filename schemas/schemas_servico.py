@@ -3,6 +3,7 @@ from ninja import Schema
 from typing import Optional, List
 from pydantic import EmailStr, Field
 from enum import Enum
+from decimal import Decimal
 
 class ObjetivoSiteEnum(str, Enum):
     apresentar_empresa = "Apresentar minha empresa"
@@ -80,5 +81,15 @@ class SchemaSolicitacaoServico(Schema):
     data_inicio: date
     data_final: date
     factura_servico: Optional[str] = None
-    
-#declaracao_certificado: str = Field(..., title="Declaração de Certificado", description="Declaração de certificado do candidato.")    
+
+class RequisitarServicoConsultoriaSchema(Schema):
+    seuNome: str = Field(..., title="Nome do Cliente", min_length=2, max_length=100)
+    servico: Optional[str] = Field(None, title="Serviço Desejado")
+    cidade: Optional[str] = Field(None, title="Cidade")
+    municipio: Optional[str] = Field(None, title="Municipio")
+    suaEmpresa: Optional[str] = Field(None, title="Área de Atuação")
+    seuTelefone: Optional[str] = Field(None, title="Telefone", pattern=r"^\d{9,15}$")# Apenas números, de 9 a 15 dígitos
+    seuEmail: Optional[EmailStr] = Field(None, title="E-mail Profissional")
+
+    class Config:
+        from_attributes = True  

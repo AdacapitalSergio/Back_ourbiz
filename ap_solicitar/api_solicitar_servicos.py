@@ -9,7 +9,7 @@ from schemas.schema_plano_negocio import PlanoNegocioInput, PlanoNegocioResponse
 from .models import WebsiteRequest, Objetivo
 from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServicoSchema
 from utils.solicitacao_website_email import send_conversation_for_operation_email, send_website_request_email
-from utils.gemini import gerar_conteudo_secoes, gerar_plano_de_negocio_word
+from utils.gemini import gerar_conteudo_secoes
 
 from celery.result import AsyncResult
 
@@ -18,7 +18,11 @@ from .models import SolicitacaoServico, Cliente,  Funcionario
 from servico.models import Plano, Servico
 from schemas.schemas_servico import SchemaSolicitacaoServico, SchemaSolicitacaoServicoCreate
 from datetime import date
-from dateutil.relativedelta import relativedelta 
+from dateutil.relativedelta import relativedelta
+
+from schemas.schemas_servico import RequisitarServicoConsultoriaSchema
+from utils.solicitacao_servico_consultoria import send_consultoria_request_email
+
 
 
 
@@ -194,3 +198,18 @@ def deletar_solicitacao(request, solicitacao_id: int):
 @solicitar_router.get("/gerar_plano/")
 def gerar_plano_view(request):
     return render(request, 't.html')
+
+@solicitar_router.post("/consultoria", response={200: dict, 400: dict})
+def solicitar_servicos_consultoria(request, data: RequisitarServicoConsultoriaSchema):   
+    """Cria um novo cliente e envia e-mail de verificação"""
+# Chamar a função de envio assíncrono
+    send_consultoria_request_email.delay(
+        cliente_nome=data.seuNome,
+        servico=data.servico,
+        cidade=data.cidade,
+        municipio=data.municipio,
+        area_atuacao=data.suaEmpresa,
+        telefone=data.seuTelefone,
+        cliente_email=data.seuEmail
+    )   
+    return 200, {"message": "Servico requisitado com sucesso por favor aguarde pelo nosso contacto."}

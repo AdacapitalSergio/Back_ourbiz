@@ -179,7 +179,8 @@ def send_website_request_email(
         subject=email_subject,
         body="",
         from_email=email_requerente,
-        to=["comercial@ourbiz.ao"],
+        to=["comercial@ourbiz.ao"]
+        #to=["comercial@ourbiz.ao"],
     )
     msg.attach_alternative(email_body, "text/html")
 
