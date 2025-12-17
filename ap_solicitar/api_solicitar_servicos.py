@@ -3,13 +3,13 @@ from ninja import Router
 
 from django.shortcuts import render
 
-from schemas.schema_plano_negocio import PlanoNegocioInput, PlanoNegocioResponse
+from schemas.schema_plano_negocio import PlanoNegocioInput, PlanoNegocioResponse, SugestaoSchema
 
 
 from .models import WebsiteRequest, Objetivo
 from schemas.schemas_servico import RequisitarConversationSchema, RequisitarServicoSchema
 from utils.solicitacao_website_email import send_conversation_for_operation_email, send_website_request_email
-from utils.gemini import gerar_conteudo_secoes
+from utils.gemini import gerar_conteudo_secoes, sugerir_ideias
 
 from celery.result import AsyncResult
 
@@ -94,28 +94,6 @@ def solicitar_conversation_for_operation(request, data: RequisitarConversationSc
     return 200, {"message": "Contacto enviado com sucesso."}
 
 
-@solicitar_router.post("/gerar_plano_negocio", response=dict)
-def gerar_plano(request, data: PlanoNegocioInput):
-    dados_empresa = f"Tipo de negócio: {data.tipo_de_negocio}, Localização: {data.localizacao}"
-    task = gerar_conteudo_secoes.delay(dados_empresa)
-    return {"task_id": task.id, "status": "em processamento"}
-
-@solicitar_router.get("/gerar_plano_status/{task_id}", response=dict)
-def gerar_plano_status(request, task_id: str):
-    task_result = AsyncResult(task_id)
-
-    if task_result.state == "PENDING":
-        return {"status": "em processamento"}
-    elif task_result.state == "SUCCESS":
-        return {
-            "status": "concluido",
-            "resultado": task_result.result
-        }
-    elif task_result.state == "FAILURE":
-        return {"status": "erro", "detalhes": str(task_result.info)}
-    else:
-        return {"status": task_result.state}
-
 @solicitar_router.post("/solicitacoes/", response=SchemaSolicitacaoServico)
 def criar_solicitacao(request, payload: SchemaSolicitacaoServicoCreate):
     cliente = get_object_or_404(Cliente, id=payload.cliente_id)
@@ -195,21 +173,24 @@ def deletar_solicitacao(request, solicitacao_id: int):
     solicitacao.delete()
     return {"success": True, "message": "Solicitação removida com sucesso"}
 
-@solicitar_router.get("/gerar_plano/")
-def gerar_plano_view(request):
-    return render(request, 't.html')
-
 @solicitar_router.post("/consultoria", response={200: dict, 400: dict})
-def solicitar_servicos_consultoria(request, data: RequisitarServicoConsultoriaSchema):   
-    """Cria um novo cliente e envia e-mail de verificação"""
-# Chamar a função de envio assíncrono
+def solicitar_servicos_consultoria(request, data: RequisitarServicoConsultoriaSchema):
+    """
+    Recebe pedido de consultoria e envia e-mail de notificação
+    """
+
+    # Envio assíncrono do e-mail
     send_consultoria_request_email.delay(
-        cliente_nome=data.seuNome,
-        servico=data.servico,
-        cidade=data.cidade,
+        cliente_nome=data.nome_completo,
+        servico=data.servico_desejado,
+        provincia=data.provincia,
         municipio=data.municipio,
-        area_atuacao=data.suaEmpresa,
-        telefone=data.seuTelefone,
-        cliente_email=data.seuEmail
-    )   
-    return 200, {"message": "Servico requisitado com sucesso por favor aguarde pelo nosso contacto."}
+        area_atuacao=data.area_atuacao,
+        telefone=data.telefone,
+        cliente_email=data.email,
+        forma_contacto=data.forma_contacto
+    )
+
+    return 200, {
+        "message": "Serviço requisitado com sucesso. Em breve entraremos em contacto consigo."
+    }

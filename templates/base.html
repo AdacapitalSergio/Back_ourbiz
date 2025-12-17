@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Meu Projeto{% endblock %}</title>
+
+  <!-- CSS base 
+  <link rel="stylesheet" href="{% static 'admin/css/indexplano.css' %}">-->
+
+  <!-- Bloco para CSS extra específico -->
+  {% block extrastyle %}{% endblock %}
+</head>
+<body>
+
+  <!-- Bloco para conteúdo da página -->
+  {% block content %}
+  
+  {% endblock %}
+
+  <!-- JS base
+  <script src="{% static 'admin/js/plano_script.js' %}"></script> -->
+
+  <!-- Bloco para JS extra específico -->
+  {% block extrajs %}{% endblock %}
+</body>
+</html>

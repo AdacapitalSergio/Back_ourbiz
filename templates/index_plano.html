@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Gerador de Plano{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'admin/css/indexplano.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<header>📄 Gerador Automático de Plano de Negócio</header>
+
+<main id="formulario">
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <label>Tipo de Negócio:</label>
+    <input type="text" id="tipo" placeholder="Ex: Peixaria, Loja, Restaurante...">
+    <button onclick="nextStep(1)">Avançar</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <label>Localização:</label>
+    <input type="text" id="localizacao" placeholder="Ex: Lubango, Luanda...">
+    <button onclick="nextStep(2)">Avançar</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <label>Nome da Empresa:</label>
+    <input type="text" id="nome_empresa" placeholder="Digite ou escolha uma sugestão">
+
+    <div id="sugestoes_nome" class="suggestions" style="display:none;"></div>
+
+    <button class="reload-btn" onclick="carregarSugestoesNome()">🔄 Recarregar Sugestões</button>
+    <button onclick="nextStep(3)">Avançar</button>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <label>O que torna o teu negócio único?</label>
+    <input type="text" id="diferencial" placeholder="Digite ou escolha uma sugestão">
+
+    <div id="sugestoes_diferencial" class="suggestions" style="display:none;"></div>
+
+    <button class="reload-btn" onclick="carregarSugestoesDiferencial()">🔄 Recarregar Sugestões</button>
+    <button onclick="enviarPlano()">Gerar Plano</button>
+  </div>
+
+  <div id="resultado"></div>
+
+</main>
+
+<div id="tela-loading">
+  <h2>📄 A gerar o teu plano de negócio</h2>
+  <p>Aguarde alguns segundos...</p>
+  <div>⏳</div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script src="{% static 'admin/js/plano_script.js' %}"></script>
+{% endblock %}

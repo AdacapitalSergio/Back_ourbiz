@@ -1,0 +1,95 @@
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: linear-gradient(180deg, #0f172a, #020617);
+  color: #e5e7eb;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+main {
+  max-width: 700px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.step { display: none; }
+.step.active { display: block; }
+
+label { font-weight: 600; color: #333; }
+input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-top: .3rem;
+}
+
+button {
+  margin-top: 1rem;
+  width: 100%;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  color: #fff;
+  font-weight: 500;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover { background-color: #005fa3; }
+
+.suggestions {
+  margin-top: 1rem;
+  background: #eef6ff;
+  padding: 1rem;
+  border-radius: 8px;
+}
+.suggestions p { margin: 0 0 .5rem 0; font-weight: bold; }
+.suggestion-item {
+  background: white;
+  border: 1px solid #0078d7;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  margin: .3rem 0;
+  cursor: pointer;
+}
+.suggestion-item:hover { background: #0078d7; color: white; }
+
+.reload-btn {
+  margin-top: .5rem;
+  background: #fff;
+  color: #0078d7;
+  border: 1px solid #0078d7;
+  padding: .5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: .9rem;
+  transition: .2s;
+}
+.reload-btn:hover { background: #0078d7; color: #fff; }
+
+#tela-loading {
+  text-align: center;
+  display: none;
+  max-width: 700px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

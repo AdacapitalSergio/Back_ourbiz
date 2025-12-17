@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador Automático de Plano de Negócio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+    }
+
+    header {
+      background-color: #0078d7;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    main, #tela-loading, #tela-resultado {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: .3rem;
+    }
+
+    input {
+      width: 100%;
+      padding: .6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: .8rem;
+      background: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+
+    .suggestions {
+      background: #eef6ff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .suggestion-item {
+      background: white;
+      border: 1px solid #0078d7;
+      padding: .4rem;
+      border-radius: 6px;
+      margin-top: .4rem;
+      cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+      background: #0078d7;
+      color: white;
+    }
+
+    .reload-btn {
+      margin-bottom: 1rem;
+      background: white;
+      color: #0078d7;
+      border: 1px solid #0078d7;
+    }
+
+    #tela-loading {
+      display: none;
+      text-align: center;
+    }
+
+    #tela-loading h2 {
+      color: #0078d7;
+    }
+
+    #tela-resultado {
+      display: none;
+    }
+
+    .secao {
+      margin-bottom: 1.5rem;
+    }
+
+    .secao h3 {
+      color: #0078d7;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>📄 Gerador Automático de Plano de Negócio</header>
+
+<!-- ================= FORMULÁRIO ================= -->
+<main id="formulario">
+
+  <label>Tipo de Negócio</label>
+  <input id="tipo" placeholder="Ex: Peixaria, Loja, Restaurante">
+
+  <label>Localização</label>
+  <input id="localizacao" placeholder="Ex: Lubango, Luanda">
+
+  <label>Nome da Empresa</label>
+  <input id="nome_empresa">
+
+  <label>O que torna o teu negócio único?</label>
+  <input id="diferencial">
+
+  <div class="suggestions" id="sugestoes"></div>
+
+  <button class="reload-btn" onclick="carregarSugestoes()">🔄 Recarregar Sugestões</button>
+  <button onclick="enviarPlano()">Gerar Plano</button>
+</main>
+
+<!-- ================= LOADING ================= -->
+<div id="tela-loading">
+  <h2>📄 A gerar o teu plano de negócio</h2>
+  <p>Aguarde alguns segundos...</p>
+  <div style="font-size:2rem;">⏳</div>
+</div>
+
+<!-- ================= RESULTADO ================= -->
+<div id="tela-resultado">
+  <h2 style="text-align:center;">✅ Plano Gerado</h2>
+  <div id="resultado"></div>
+
+  <button onclick="voltarInicio()">🔄 Gerar outro plano</button>
+</div>
+
+<script>
+let formData = {};
+
+function esconderFormulario() {
+  document.getElementById("formulario").style.display = "none";
+}
+
+function mostrarLoading() {
+  document.getElementById("tela-loading").style.display = "block";
+}
+
+function mostrarResultado() {
+  document.getElementById("tela-loading").style.display = "none";
+  document.getElementById("tela-resultado").style.display = "block";
+}
+
+function voltarInicio() {
+  document.getElementById("tela-resultado").style.display = "none";
+  document.getElementById("formulario").style.display = "block";
+}
+
+async function carregarSugestoes() {
+  const tipo = document.getElementById("tipo").value;
+  const localizacao = document.getElementById("localizacao").value;
+
+  if (!tipo || !localizacao) return;
+
+  const box = document.getElementById("sugestoes");
+  box.innerHTML = "Carregando sugestões...";
+
+  const res = await fetch("http://localhost:8000/api/gerar_plano/sugerir_respostas", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      dados: `${tipo}, ${localizacao}`,
+      pergunta: "O que torna o teu negócio único?",
+      limite: 50
+    })
+  });
+
+  const json = await res.json();
+
+  box.innerHTML = json.resultado.map(s =>
+    `<div class="suggestion-item" onclick="document.getElementById('diferencial').value='${s}'">${s}</div>`
+  ).join("");
+}
+
+async function enviarPlano() {
+  formData = {
+    tipo_de_negocio: document.getElementById("tipo").value,
+    localizacao: document.getElementById("localizacao").value,
+    nome_empresa: document.getElementById("nome_empresa").value,
+    diferencial: document.getElementById("diferencial").value
+  };
+
+  esconderFormulario();
+  mostrarLoading();
+
+  const res = await fetch("http://localhost:8000/api/gerar_plano/gerar_plano_negocio", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(formData)
+  });
+
+  const json = await res.json();
+  const taskId = json.task_id;
+
+  const interval = setInterval(async () => {
+    const statusRes = await fetch(
+      `http://localhost:8000/api/gerar_plano/gerar_plano_status/${taskId}`
+    );
+    const statusJson = await statusRes.json();
+
+    if (statusJson.status === "concluido") {
+      clearInterval(interval);
+      mostrarResultado();
+
+      document.getElementById("resultado").innerHTML =
+        Object.entries(statusJson.resultado)
+          .map(([t, c]) => `
+            <div class="secao">
+              <h3>${t.replaceAll("_"," ")}</h3>
+              <p>${c}</p>
+            </div>
+          `).join("");
+    }
+  }, 3000);
+}
+</script>
+
+</body>
+</html>

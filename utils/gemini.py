@@ -5,6 +5,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, Inches
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+import ast
 import re
 import os
 from typing import Dict, Any
@@ -12,11 +13,11 @@ import google.generativeai as genai
 
 
 # Configura a API Key (nunca exponha publicamente)
-genai.configure(api_key="AIzaSyCYfHeJAJqyi2qrBpygTQn0XxTfg4K83po")
+#genai.configure(api_key="AIzaSyCYfHeJAJqyi2qrBpygTQn0XxTfg4K83po")
 
 
 # ---------- Configuração do Gemini ----------
-#genai.configure(api_key="AIzaSyBCtgsPp0KU848QKGEhd5KCGgfn9gYVbUo")
+genai.configure(api_key="AIzaSyDdLN5FlE_mJdsH2yQcSWCBJcMsceJOLWs")
 
 modelo = genai.GenerativeModel("gemini-2.5-flash")
 
@@ -46,74 +47,81 @@ def limpar_texto(texto: str) -> str:
     return texto.strip()
 
 
+def sugerir_ideias(dados: str, pergunta: str, qtd_caracteres: str):
+    prompt = f"""
+    Gere *exatamente* 5 respostas curtas com no máximo {qtd_caracteres} caracteres
+    para a pergunta: "{pergunta}".
+
+    BASE: {dados}
+
+    REGRAS OBRIGATÓRIAS:
+    - Responda somente com uma lista Python válida de 5 strings.
+    - Nenhuma string pode ultrapassar {qtd_caracteres} caracteres.
+    - Não inclua explicações, títulos, código, prefixos ("python") ou texto fora da lista.
+    - Não escreva frases longas.
+    - Não adicione comentários.
+
+    Exemplo de formato correto:
+    ["ideia 1", "ideia 2", "ideia 3", "ideia 4", "ideia 5"]
+    """
+
+    resposta = modelo.generate_content(prompt)
+    texto = limpar_texto(resposta.text)
+
+    # 🔥 transforma texto "[...]" em lista Python real
+    try:
+        lista = ast.literal_eval(texto)
+        if isinstance(lista, list):
+            return lista
+        else:
+            return []
+    except:
+        return []
+
+
 # ---------- Função principal ----------
-@shared_task
+#@shared_task
+@shared_task(time_limit=60, soft_time_limit=50)
 def gerar_conteudo_secoes(dados: str) -> dict[str, Any]:
+
+    prompt = f"""
+    Gere um PLANO DE NEGÓCIO COMPLETO, claro e profissional.
+
+    DADOS DA EMPRESA:
+    {dados}
+
+    REGRAS OBRIGATÓRIAS:
+    - Cada secção deve ter no máximo 6 frases curtas.
+    - Linguagem simples, objetiva e prática.
+    - Não use markdown.
+    - Não use listas com bullets.
+    - Responda APENAS com um JSON válido exatamente neste formato:
+
+    {{
+      "SUMARIO_EXECUTIVO": "...",
+      "A_EMPRESA": "...",
+      "CARATERIZACAO_DO_PROJETO": "...",
+      "O_PRODUTO_SERVICO": "...",
+      "ANALISE_DE_MERCADO": "...",
+      "SISTEMA_PRODUTIVO": "...",
+      "PLANO_DE_MARKETING": "...",
+      "ESTRUTURA_ORGANIZACIONAL": "...",
+      "PLANO_FINANCEIRO": "...",
+      "CONSIDERACOES_FINAIS": "...",
+      "ANEXOS": "..."
+    }}
     """
-    Gera automaticamente as seções completas do plano de negócio
-    com base nos dados fornecidos (tipo de negócio + localização).
-    """
 
-    secoes = {
-        "SUMARIO_EXECUTIVO": "Crie um resumo executivo do plano de negócio.",
-        "A_EMPRESA": """
-            Descreva a empresa, incluindo:
-            - Historial
-            - Missão
-            - Visão
-            - Valores
-        """,
-        "CARATERIZACAO_DO_PROJETO": """
-            Explique o projeto:
-            - Descrição da área física (lay-out)
-            - Localização do projeto
-        """,
-        "O_PRODUTO_SERVICO": "Descreva em detalhe os produtos e/ou serviços oferecidos.",
-        "ANALISE_DE_MERCADO": """
-            Monte a análise de mercado:
-            - Clientes
-            - Fornecedores
-            - Concorrência
-            - As 5 Forças de Porter
-            - Análise SWOT
-        """,
-        "SISTEMA_PRODUTIVO": """
-            Detalhe o sistema produtivo:
-            - Instalações de suporte
-            - Equipamento produtivo
-        """,
-        "PLANO_DE_MARKETING": """
-            Crie a seção de marketing:
-            - Marketing estratégico
-            - Marketing tático
-        """,
-        "ESTRUTURA_ORGANIZACIONAL": """
-            Detalhe a estrutura organizacional:
-            - Recursos Humanos
-        """,
-        "PLANO_FINANCEIRO": """
-            Crie a parte financeira:
-            - Investimento inicial
-            - Financiamento
-            - Previsão de receitas
-            - Custos mensais
-            - Fluxo de caixa
-            - DRE (Demonstração de Resultados)
-            - Índices de Rentabilidade
-        """,
-        "CONSIDERACOES_FINAIS": "Faça as considerações finais, riscos e planos de crescimento.",
-        "ANEXOS": "Liste anexos relevantes (documentos, gráficos, relatórios)."
-    }
+    resposta = modelo.generate_content(prompt)
+    texto = limpar_texto(resposta.text)
 
-    resultados: dict[str, Any] = {}
-
-    for chave, prompt in secoes.items():
-        resposta = modelo.generate_content(
-            f"{prompt}\n\nDados da empresa:\n{dados}"
-        )
-        resultados[chave] = limpar_texto(resposta.text)
-
-    return resultados
+    try:
+        resultado = ast.literal_eval(texto)
+        if isinstance(resultado, dict):
+            return resultado
+        return {}
+    except Exception as e:
+        return {"erro": "Falha ao gerar plano"}
 
 
 

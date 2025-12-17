@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plano de Negócios{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'admin/css/plano_result.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<aside class="sidebar">
+  <button class="back-btn" onclick="history.back()">⟵ Voltar</button>
+
+  <h2>{{ plano.nome_empresa|default:"Plano de Negócios" }}</h2>
+
+  <ul class="menu" id="menu-secoes">
+    {% for secao in plano.secoes %}
+      <li onclick="scrollPara('{{ secao.id }}')">
+        {{ secao.titulo }}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div class="upgrade">Atualiza teu plano ✨</div>
+  <div class="user">adelinoemiliano@gmail.com<br/>Plano Gratuito</div>
+</aside>
+
+<main class="content" id="conteudo-plano">
+  {% for secao in plano.secoes %}
+  <section class="card secao" id="{{ secao.id }}">
+    <div class="icon">📄</div>
+    <div>
+      <h3>{{ secao.titulo }}</h3>
+      <ul>
+        {% for item in secao.itens %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+  {% endfor %}
+</main>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+function scrollPara(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+}
+</script>
+{% endblock %}

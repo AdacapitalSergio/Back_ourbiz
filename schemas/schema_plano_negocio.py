@@ -2,6 +2,10 @@
 from ninja import Schema
 
 
+class SugestaoSchema(Schema):
+    dados: str
+    pergunta: str
+    limite: int = 50   # valor padrão
 
 # ---------- Schemas ----------
 class SWOTSchema(Schema):
@@ -81,4 +85,6 @@ class PlanoNegocioResponse(Schema):
 class PlanoNegocioInput(Schema):
     tipo_de_negocio: str
     localizacao: str
+    nome_empresa: str
+    diferencial: str
 

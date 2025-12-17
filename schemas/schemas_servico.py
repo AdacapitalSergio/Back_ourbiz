@@ -3,7 +3,9 @@ from ninja import Schema
 from typing import Optional, List
 from pydantic import EmailStr, Field
 from enum import Enum
-from decimal import Decimal
+from typing import Literal
+
+
 
 class ObjetivoSiteEnum(str, Enum):
     apresentar_empresa = "Apresentar minha empresa"
@@ -83,13 +85,29 @@ class SchemaSolicitacaoServico(Schema):
     factura_servico: Optional[str] = None
 
 class RequisitarServicoConsultoriaSchema(Schema):
-    seuNome: str = Field(..., title="Nome do Cliente", min_length=2, max_length=100)
-    servico: Optional[str] = Field(None, title="Serviço Desejado")
-    cidade: Optional[str] = Field(None, title="Cidade")
-    municipio: Optional[str] = Field(None, title="Municipio")
-    suaEmpresa: Optional[str] = Field(None, title="Área de Atuação")
-    seuTelefone: Optional[str] = Field(None, title="Telefone", pattern=r"^\d{9,15}$")# Apenas números, de 9 a 15 dígitos
-    seuEmail: Optional[EmailStr] = Field(None, title="E-mail Profissional")
+    nome_completo: str = Field(..., min_length=3, max_length=150, example="Adelino Manuel")    
+    provincia: str = Field(..., example="Huíla")
+    municipio: str = Field(..., example="Lubango")
+    email: EmailStr = Field(..., example="adelino@email.com")
+    telefone: str = Field(
+        ...,
+        pattern=r"^\d{9,15}$",
+        example="900000000",
+        description="Apenas números"
+    )
+    area_atuacao: str = Field(
+        ...,
+        min_length=3,
+        example="Tecnologia / Desenvolvimento de Software"
+    )
+    servico_desejado: str = Field(
+        ...,
+        example="Desenvolvimento Web"
+    )
+    forma_contacto: Literal["telefone", "email"] = Field(
+        ...,
+        example="telefone"
+    )
 
     class Config:
         from_attributes = True  
