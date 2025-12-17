@@ -14,10 +14,10 @@ import google.generativeai as genai
 
 # Configura a API Key (nunca exponha publicamente)
 #genai.configure(api_key="AIzaSyCYfHeJAJqyi2qrBpygTQn0XxTfg4K83po")
-
+genai.configure(api_key="AIzaSyBvpQ7uT06MgZd72_9ba6mCEbSUk8iosJI")
 
 # ---------- Configuração do Gemini ----------
-genai.configure(api_key="AIzaSyDdLN5FlE_mJdsH2yQcSWCBJcMsceJOLWs")
+#genai.configure(api_key="AIzaSyDdLN5FlE_mJdsH2yQcSWCBJcMsceJOLWs")
 
 modelo = genai.GenerativeModel("gemini-2.5-flash")
 
@@ -91,7 +91,7 @@ def gerar_conteudo_secoes(dados: str) -> dict[str, Any]:
     {dados}
 
     REGRAS OBRIGATÓRIAS:
-    - Cada secção deve ter no máximo 6 frases curtas.
+    - Cada secção deve ter no máximo 30 frases curtas.
     - Linguagem simples, objetiva e prática.
     - Não use markdown.
     - Não use listas com bullets.
